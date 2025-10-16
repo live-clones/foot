@@ -78,6 +78,12 @@
 * `[colors-light]` section to `foot.ini`. Replaces `[colors2]`.
 * `XTGETTCAP`: added `query-os-name`, returning the OS foot is
   compiled for (e.g. _'Linux'_) ([#2209][2209]).
+* Preliminary (untested) support for background blur via the new
+  `ext-background-effect-v1` protocol. Enable by setting
+  `colors-{dark,light}.blur=yes`. Foot needs to have been **built**
+  against `wayland-protocols >= 1.45`, and the compositor **must**
+  implement the `ext-background-effect-v1` protocol, **and** the
+  `blur` effect.
 
 [2212]: https://codeberg.org/dnkl/foot/issues/2212
 [2209]: https://codeberg.org/dnkl/foot/issues/2209

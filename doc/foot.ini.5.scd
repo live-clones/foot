@@ -1097,6 +1097,14 @@ The default theme used is *colors-dark*, unless
 	
 	Default: _default_
 
+*blur*
+	Boolean. When enabled, foot will blur the background, when it is
+	transparent. This feature requires the compositor to implement the
+	_ext-background-effect-v1_ protocol (and specifically, the _blur_
+	effect).
+	
+	Default: _no_
+
 *dim-blend-towards*
 	Which color to blend towards when "auto" dimming a color (see
 	*dim0*..*dim7* above). One of *black* or *white*. Blending towards

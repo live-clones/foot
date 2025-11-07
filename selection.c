@@ -19,6 +19,7 @@
 #include "char32.h"
 #include "commands.h"
 #include "config.h"
+#include "debug.h"
 #include "extract.h"
 #include "grid.h"
 #include "misc.h"
@@ -558,9 +559,15 @@ selection_find_quote_left(struct terminal *term, struct coord *pos,
         if (*quote_char == '\0' ? (wc == '"' || wc == '\'')
                                 : wc == *quote_char)
         {
-            pos->row = next_row;
-            pos->col = next_col + 1;
-            xassert(pos->col < term->cols);
+            xassert(next_col + 1 <= term->cols);
+            if (next_col + 1 == term->cols) {
+                xassert(next_row < pos->row);
+                pos->row = next_row + 1;
+                pos->col = 0;
+            } else {
+                pos->row = next_row;
+                pos->col = next_col + 1;
+            }
 
             *quote_char = wc;
             return true;

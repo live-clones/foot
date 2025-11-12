@@ -85,6 +85,8 @@
 ### Fixed
 
 * Search mode: composing keys not ignored.
+* Crash when triple-clicking a soft-wrapped line and there is a quote
+  character in the last column.
 
 
 ### Security

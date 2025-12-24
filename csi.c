@@ -117,9 +117,9 @@ csi_sgr(struct terminal *term)
                         style > UNDERLINE_SINGLE;
                     break;
                 }
-
-                term_update_ascii_printer(term);
-            }
+            } else
+                term->bits_affecting_ascii_printer.underline_style = false;
+            term_update_ascii_printer(term);
             break;
         }
         case 5: term->vt.attrs.blink = true; break;

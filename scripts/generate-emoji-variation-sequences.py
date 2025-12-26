@@ -1,11 +1,10 @@
 #!/usr/bin/env python3
 
 import argparse
-import sys
 
 
 class Codepoint:
-    def __init__(self, start: int, end: None|int = None):
+    def __init__(self, start: int, end: None | int = None) -> None:
         self.start = start
         self.end = start if end is None else end
         self.vs15 = False
@@ -15,7 +14,7 @@ class Codepoint:
         return f'{self.start:x}-{self.end:x}, vs15={self.vs15}, vs16={self.vs16}'
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument('input', type=argparse.FileType('r'))
     parser.add_argument('output', type=argparse.FileType('w'))
@@ -100,4 +99,4 @@ def main():
 
 
 if __name__ == '__main__':
-    sys.exit(main())
+    main()

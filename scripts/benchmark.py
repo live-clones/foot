@@ -11,7 +11,7 @@ import termios
 from datetime import datetime
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument('files', type=argparse.FileType('rb'), nargs='+')
     parser.add_argument('--iterations', type=int, default=20)
@@ -24,12 +24,12 @@ def main():
                     termios.TIOCGWINSZ,
                     struct.pack('HHHH', 0, 0, 0, 0)))
 
-    times = {name: [] for name in [f.name for f in args.files]}
+    times: dict[str, list[float]] = {name: [] for name in [f.name for f in args.files]}
 
     for f in args.files:
         bench_bytes = f.read()
 
-        for i in range(args.iterations):
+        for _ in range(args.iterations):
             start = datetime.now()
             sys.stdout.buffer.write(bench_bytes)
             stop = datetime.now()
@@ -48,4 +48,4 @@ def main():
 
 
 if __name__ == '__main__':
-    sys.exit(main())
+    main()

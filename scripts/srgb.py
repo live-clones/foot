@@ -2,7 +2,6 @@
 
 import argparse
 import math
-import sys
 
 
 # Note: we use a pure gamma 2.2 function, rather than the piece-wise
@@ -17,7 +16,7 @@ def linear_to_srgb(f: float) -> float:
     return math.pow(f, 1 / 2.2)
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument('c_output', type=argparse.FileType('w'))
     parser.add_argument('h_output', type=argparse.FileType('w'))
@@ -68,4 +67,4 @@ def main():
 
 
 if __name__ == '__main__':
-    sys.exit(main())
+    main()

@@ -8,6 +8,8 @@ import struct
 import sys
 import termios
 
+from typing import Any
+
 
 class ColorVariant(enum.IntEnum):
     NONE = enum.auto()
@@ -17,7 +19,7 @@ class ColorVariant(enum.IntEnum):
     RGB = enum.auto()
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument(
         'out', type=argparse.FileType(mode='w'), nargs='?', help='name of output file')
@@ -38,10 +40,16 @@ def main():
     opts = parser.parse_args()
     out = opts.out if opts.out is not None else sys.stdout
 
+    lines: int | None = None
+    cols: int | None = None
+    width: int | None = None
+    height: int | None = None
+
     if opts.rows is None or opts.cols is None:
         try:
-            def dummy(*args):
+            def dummy(*args: Any) -> None:
                 """Need a handler installed for sigwait() to trigger."""
+                _ = args
                 pass
             signal.signal(signal.SIGWINCH, dummy)
 
@@ -52,6 +60,9 @@ def main():
                         fcntl.ioctl(pty,
                                     termios.TIOCGWINSZ,
                                     struct.pack('HHHH', 0, 0, 0, 0)))
+
+                assert width is not None
+                assert height is not None
 
                 if width > 0 and height > 0:
                     break
@@ -71,9 +82,11 @@ def main():
 
     if opts.rows is not None:
         lines = opts.rows
+        assert lines is not None
         height = 15 * lines  # PGO helper binary hardcodes cell height to 15px
     if opts.cols is not None:
         cols = opts.cols
+        assert cols is not None
         width = 8 * cols     # PGO help binary hardcodes cell width to 8px
 
     if lines is None or cols is None or height is None or width is None:
@@ -190,8 +203,8 @@ def main():
         # The sixel 'alphabet'
         sixels = '?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~'
 
-        last_pos = None
-        last_size = None
+        last_pos: tuple[int, int] | None = None
+        last_size: tuple[int, int] = 0, 0
 
         for _ in range(20):
             if last_pos is not None and random.randrange(2):
@@ -254,4 +267,4 @@ def main():
 
 
 if __name__ == '__main__':
-    sys.exit(main())
+    main()

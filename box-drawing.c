@@ -2,7 +2,6 @@
 
 #include <stdio.h>
 #include <math.h>
-#include <fenv.h>
 #include <errno.h>
 
 #define LOG_MODULE "box-drawing"

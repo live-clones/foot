@@ -84,7 +84,6 @@ struct buffer_private {
     struct buffer_pool *pool;
     off_t offset;             /* Offset into memfd where data begins */
     size_t size;
-    bool with_alpha;
 
     bool scrollable;
 
@@ -98,11 +97,8 @@ struct buffer_chain {
     size_t pix_instances;
     bool scrollable;
 
-    pixman_format_code_t pixman_fmt_without_alpha;
-    enum wl_shm_format shm_format_without_alpha;
-
-    pixman_format_code_t pixman_fmt_with_alpha;
-    enum wl_shm_format shm_format_with_alpha;
+    pixman_format_code_t pixman_fmt;
+    enum wl_shm_format shm_format;
 
     void (*release_cb)(struct buffer *buf, void *data);
     void *cb_data;
@@ -285,9 +281,7 @@ instantiate_offset(struct buffer_private *buf, off_t new_offset)
     wl_buf = wl_shm_pool_create_buffer(
         pool->wl_pool, new_offset,
         buf->public.width, buf->public.height, buf->public.stride,
-        buf->with_alpha
-            ? buf->chain->shm_format_with_alpha
-            : buf->chain->shm_format_without_alpha);
+        buf->chain->shm_format);
 
     if (wl_buf == NULL) {
         LOG_ERR("failed to create SHM buffer");
@@ -297,9 +291,7 @@ instantiate_offset(struct buffer_private *buf, off_t new_offset)
     /* One pixman image for each worker thread (do we really need multiple?) */
     for (size_t i = 0; i < buf->public.pix_instances; i++) {
         pix[i] = pixman_image_create_bits_no_clear(
-            buf->with_alpha
-                ? buf->chain->pixman_fmt_with_alpha
-                : buf->chain->pixman_fmt_without_alpha,
+            buf->chain->pixman_fmt,
             buf->public.width, buf->public.height,
             (uint32_t *)mmapped, buf->public.stride);
 
@@ -334,8 +326,7 @@ err:
 static void NOINLINE
 get_new_buffers(struct buffer_chain *chain, size_t count,
                 int widths[static count], int heights[static count],
-                struct buffer *bufs[static count], bool with_alpha,
-                bool immediate_purge)
+                struct buffer *bufs[static count], bool immediate_purge)
 {
     xassert(count == 1 || !chain->scrollable);
     /*
@@ -354,10 +345,7 @@ get_new_buffers(struct buffer_chain *chain, size_t count,
     size_t total_size = 0;
     for (size_t i = 0; i < count; i++) {
         stride[i] = stride_for_format_and_width(
-            with_alpha
-                ? chain->pixman_fmt_with_alpha
-                : chain->pixman_fmt_without_alpha,
-            widths[i]);
+            chain->pixman_fmt, widths[i]);
 
         if (min_stride_alignment > 0) {
             const size_t m = min_stride_alignment;
@@ -521,7 +509,6 @@ get_new_buffers(struct buffer_chain *chain, size_t count,
             .chain = chain,
             .ref_count = immediate_purge ? 0 : 1,
             .busy = true,
-            .with_alpha = with_alpha,
             .pool = pool,
             .offset = 0,
             .size = sizes[i],
@@ -593,13 +580,13 @@ shm_did_not_use_buf(struct buffer *_buf)
 void
 shm_get_many(struct buffer_chain *chain, size_t count,
              int widths[static count], int heights[static count],
-             struct buffer *bufs[static count], bool with_alpha)
+             struct buffer *bufs[static count])
 {
-    get_new_buffers(chain, count, widths, heights, bufs, with_alpha, true);
+    get_new_buffers(chain, count, widths, heights, bufs, true);
 }
 
 struct buffer *
-shm_get_buffer(struct buffer_chain *chain, int width, int height, bool with_alpha)
+shm_get_buffer(struct buffer_chain *chain, int width, int height)
 {
     LOG_DBG(
         "chain=%p: looking for a reusable %dx%d buffer "
@@ -610,9 +597,7 @@ shm_get_buffer(struct buffer_chain *chain, int width, int height, bool with_alph
     tll_foreach(chain->bufs, it) {
         struct buffer_private *buf = it->item;
 
-        if (buf->public.width != width || buf->public.height != height ||
-            with_alpha != buf->with_alpha)
-        {
+        if (buf->public.width != width || buf->public.height != height) {
             LOG_DBG("purging mismatching buffer %p", (void *)buf);
             if (buffer_unref_no_remove_from_chain(buf))
                 tll_remove(chain->bufs, it);
@@ -663,7 +648,7 @@ shm_get_buffer(struct buffer_chain *chain, int width, int height, bool with_alph
     }
 
     struct buffer *ret;
-    get_new_buffers(chain, 1, &width, &height, &ret, with_alpha, false);
+    get_new_buffers(chain, 1, &width, &height, &ret, false);
     return ret;
 }
 
@@ -1009,11 +994,8 @@ shm_chain_new(struct wayland *wayl, bool scrollable, size_t pix_instances,
               enum shm_bit_depth desired_bit_depth,
               void (*release_cb)(struct buffer *buf, void *data), void *cb_data)
 {
-    pixman_format_code_t pixman_fmt_without_alpha = PIXMAN_x8r8g8b8;
-    enum wl_shm_format shm_fmt_without_alpha = WL_SHM_FORMAT_XRGB8888;
-
-    pixman_format_code_t pixman_fmt_with_alpha = PIXMAN_a8r8g8b8;
-    enum wl_shm_format shm_fmt_with_alpha = WL_SHM_FORMAT_ARGB8888;
+    pixman_format_code_t pixman_fmt = PIXMAN_a8r8g8b8;
+    enum wl_shm_format shm_fmt = WL_SHM_FORMAT_ARGB8888;
 
     static bool have_logged = false;
     static bool have_logged_10_fallback = false;
@@ -1022,12 +1004,9 @@ shm_chain_new(struct wayland *wayl, bool scrollable, size_t pix_instances,
     static bool have_logged_16_fallback = false;
 
     if (desired_bit_depth == SHM_BITS_16) {
-        if (wayl->shm_have_abgr161616 && wayl->shm_have_xbgr161616) {
-            pixman_fmt_without_alpha = PIXMAN_a16b16g16r16;
-            shm_fmt_without_alpha = WL_SHM_FORMAT_XBGR16161616;
-
-            pixman_fmt_with_alpha = PIXMAN_a16b16g16r16;
-            shm_fmt_with_alpha = WL_SHM_FORMAT_ABGR16161616;
+        if (wayl->shm_have_abgr161616) {
+            pixman_fmt = PIXMAN_a16b16g16r16;
+            shm_fmt = WL_SHM_FORMAT_ABGR16161616;
 
             if (!have_logged) {
                 have_logged = true;
@@ -1045,15 +1024,10 @@ shm_chain_new(struct wayland *wayl, bool scrollable, size_t pix_instances,
     }
 #endif
 
-    if (desired_bit_depth >= SHM_BITS_10 &&
-        pixman_fmt_with_alpha == PIXMAN_a8r8g8b8)
-    {
-        if (wayl->shm_have_argb2101010 && wayl->shm_have_xrgb2101010) {
-            pixman_fmt_without_alpha = PIXMAN_x2r10g10b10;
-            shm_fmt_without_alpha = WL_SHM_FORMAT_XRGB2101010;
-
-            pixman_fmt_with_alpha = PIXMAN_a2r10g10b10;
-            shm_fmt_with_alpha = WL_SHM_FORMAT_ARGB2101010;
+    if (desired_bit_depth >= SHM_BITS_10 && pixman_fmt == PIXMAN_a8r8g8b8) {
+        if (wayl->shm_have_argb2101010) {
+            pixman_fmt = PIXMAN_a2r10g10b10;
+            shm_fmt = WL_SHM_FORMAT_ARGB2101010;
 
             if (!have_logged) {
                 have_logged = true;
@@ -1061,12 +1035,9 @@ shm_chain_new(struct wayland *wayl, bool scrollable, size_t pix_instances,
             }
         }
 
-        else if (wayl->shm_have_abgr2101010 && wayl->shm_have_xbgr2101010) {
-            pixman_fmt_without_alpha = PIXMAN_x2b10g10r10;
-            shm_fmt_without_alpha = WL_SHM_FORMAT_XBGR2101010;
-
-            pixman_fmt_with_alpha = PIXMAN_a2b10g10r10;
-            shm_fmt_with_alpha = WL_SHM_FORMAT_ABGR2101010;
+        else if (wayl->shm_have_abgr2101010) {
+            pixman_fmt = PIXMAN_a2b10g10r10;
+            shm_fmt = WL_SHM_FORMAT_ABGR2101010;
 
             if (!have_logged) {
                 have_logged = true;
@@ -1098,11 +1069,8 @@ shm_chain_new(struct wayland *wayl, bool scrollable, size_t pix_instances,
         .pix_instances = pix_instances,
         .scrollable = scrollable,
 
-        .pixman_fmt_without_alpha = pixman_fmt_without_alpha,
-        .shm_format_without_alpha = shm_fmt_without_alpha,
-
-        .pixman_fmt_with_alpha = pixman_fmt_with_alpha,
-        .shm_format_with_alpha = shm_fmt_with_alpha,
+        .pixman_fmt = pixman_fmt,
+        .shm_format = shm_fmt,
 
         .release_cb = release_cb,
         .cb_data = cb_data,
@@ -1129,7 +1097,7 @@ shm_chain_free(struct buffer_chain *chain)
 enum shm_bit_depth
 shm_chain_bit_depth(const struct buffer_chain *chain)
 {
-    const pixman_format_code_t fmt = chain->pixman_fmt_with_alpha;
+    const pixman_format_code_t fmt = chain->pixman_fmt;
 
     return fmt == PIXMAN_a8r8g8b8
         ? SHM_BITS_8

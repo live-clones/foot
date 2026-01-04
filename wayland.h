@@ -502,11 +502,8 @@ struct wayland {
     bool use_shm_release;
 
     bool shm_have_argb2101010:1;
-    bool shm_have_xrgb2101010:1;
     bool shm_have_abgr2101010:1;
-    bool shm_have_xbgr2101010:1;
     bool shm_have_abgr161616:1;
-    bool shm_have_xbgr161616:1;
 };
 
 struct wayland *wayl_init(

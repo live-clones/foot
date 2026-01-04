@@ -65,8 +65,7 @@ enum shm_bit_depth shm_chain_bit_depth(const struct buffer_chain *chain);
  *
  * A newly allocated buffer has an age of 1234.
  */
-struct buffer *shm_get_buffer(
-    struct buffer_chain *chain, int width, int height, bool with_alpha);
+struct buffer *shm_get_buffer(struct buffer_chain *chain, int width, int height);
 /*
  * Returns many buffers, described by 'info', all sharing the same SHM
  * buffer pool.
@@ -84,7 +83,7 @@ struct buffer *shm_get_buffer(
 void shm_get_many(
     struct buffer_chain *chain, size_t count,
     int widths[static count], int heights[static count],
-    struct buffer *bufs[static count], bool with_alpha);
+    struct buffer *bufs[static count]);
 
 void shm_did_not_use_buf(struct buffer *buf);
 

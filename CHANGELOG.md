@@ -92,6 +92,11 @@
   contains at least one upper case character.
 * Mouse tracking in SGR pixel mode no longer emits negative column/row
   pixel values ([#2226][2226]).
+* Foot now always uses ARGB SHM surfaces. In earlier versions, XRGB
+  surfaces were used for opaque surfaces. Unfortunately, several
+  compositors had issues when foot switched between ARGB and XRGB
+  surfaces (for example when switching color theme, or toggling
+  fullscreen).
 
 [2202]: https://codeberg.org/dnkl/foot/issues/2202
 [2226]: https://codeberg.org/dnkl/foot/issues/2226

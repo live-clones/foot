@@ -240,11 +240,8 @@ shm_format(void *data, struct wl_shm *wl_shm, uint32_t format)
     struct wayland *wayl = data;
 
     switch (format) {
-    case WL_SHM_FORMAT_XRGB2101010: wayl->shm_have_xrgb2101010 = true; break;
     case WL_SHM_FORMAT_ARGB2101010: wayl->shm_have_argb2101010 = true; break;
-    case WL_SHM_FORMAT_XBGR2101010: wayl->shm_have_xbgr2101010 = true; break;
     case WL_SHM_FORMAT_ABGR2101010: wayl->shm_have_abgr2101010 = true; break;
-    case WL_SHM_FORMAT_XBGR16161616: wayl->shm_have_xbgr161616 = true; break;
     case WL_SHM_FORMAT_ABGR16161616: wayl->shm_have_abgr161616 = true; break;
     }
 

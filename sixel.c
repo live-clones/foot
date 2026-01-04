@@ -125,12 +125,12 @@ sixel_init(struct terminal *term, int p1, int p2, int p3)
      * that assumes 32-bit pixels).
      */
     if (shm_chain_bit_depth(term->render.chains.grid) >= SHM_BITS_10) {
-        if (term->wl->shm_have_argb2101010 && term->wl->shm_have_xrgb2101010) {
+        if (term->wl->shm_have_argb2101010) {
             term->sixel.use_10bit = true;
             term->sixel.pixman_fmt = PIXMAN_a2r10g10b10;
         }
 
-        else if (term->wl->shm_have_abgr2101010 && term->wl->shm_have_xbgr2101010) {
+        else if (term->wl->shm_have_abgr2101010) {
             term->sixel.use_10bit = true;
             term->sixel.pixman_fmt = PIXMAN_a2b10g10r10;
         }

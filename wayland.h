@@ -151,6 +151,8 @@ struct seat {
         bool alt;
         bool ctrl;
         bool super;
+
+        bool last_key_press_was_shortcut;
     } kbd;
 
     /* Pointer state */

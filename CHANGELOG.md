@@ -122,8 +122,11 @@
 * Crash when reverse-scrolling (terminfo capability `rin`) such that
   the current viewport ends up outside the scrollback ([#2232][2232]).
 * Regression: visual glitches in rare circumstances.
+* Key release events for shortcuts being sent to the client
+  application (kitty keyboard protocol only) ([#2257][2257]).
 
 [2232]: https://codeberg.org/dnkl/foot/issues/2232
+[2257]: https://codeberg.org/dnkl/foot/issues/2257
 
 
 ### Security

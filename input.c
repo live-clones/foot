@@ -1606,7 +1606,7 @@ key_press_release(struct seat *seat, struct terminal *term, uint32_t serial,
         stop_repeater(seat, key);
 
     if (pressed)
-        seat->kbd.last_key_press_was_shortcut = false;
+        seat->kbd.last_shortcut_sym = XKB_KEYSYM_MAX + 1;
 
     bool should_repeat =
         pressed && xkb_keymap_key_repeats(seat->kbd.xkb_keymap, key);
@@ -1709,7 +1709,7 @@ key_press_release(struct seat *seat, struct terminal *term, uint32_t serial,
                 if (bind->k.sym == raw_syms[i] &&
                     execute_binding(seat, term, bind, serial, 1))
                 {
-                    seat->kbd.last_key_press_was_shortcut = true;
+                    seat->kbd.last_shortcut_sym = sym;
                     goto maybe_repeat;
                 }
             }
@@ -1723,7 +1723,7 @@ key_press_release(struct seat *seat, struct terminal *term, uint32_t serial,
                 bind->mods == (mods & ~consumed) &&
                 execute_binding(seat, term, bind, serial, 1))
             {
-                seat->kbd.last_key_press_was_shortcut = true;
+                seat->kbd.last_shortcut_sym = sym;
                 goto maybe_repeat;
             }
         }
@@ -1739,14 +1739,14 @@ key_press_release(struct seat *seat, struct terminal *term, uint32_t serial,
                 if (code->item == key &&
                     execute_binding(seat, term, bind, serial, 1))
                 {
-                    seat->kbd.last_key_press_was_shortcut = true;
+                    seat->kbd.last_shortcut_sym = sym;
                     goto maybe_repeat;
                 }
             }
         }
     }
 
-    if (released && seat->kbd.last_key_press_was_shortcut) {
+    if (released && seat->kbd.last_shortcut_sym == sym) {
         /*
          * Don't process a release event, if it corresponds to a
          * triggered shortcut.
@@ -1760,6 +1760,7 @@ key_press_release(struct seat *seat, struct terminal *term, uint32_t serial,
          * then the viewport was instantly reset to the bottom, after
          * scrolling up.
          */
+        //seat->kbd.last_shortcut_sym = XKB_KEYSYM_MAX + 1;
         goto maybe_repeat;
     }
 

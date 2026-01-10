@@ -120,10 +120,14 @@ execute_binding(struct seat *seat, struct terminal *term,
 
     case BIND_ACTION_SCROLLBACK_UP_MOUSE:
         if (term->grid == &term->alt) {
-            if (term->alt_scrolling)
+            if (term->alt_scrolling) {
                 alternate_scroll(seat, amount, BTN_BACK);
-        } else
-                cmd_scrollback_up(term, amount);
+                return true;
+            }
+        } else {
+            cmd_scrollback_up(term, amount);
+            return true;
+        }
         break;
 
     case BIND_ACTION_SCROLLBACK_DOWN_PAGE:
@@ -149,10 +153,14 @@ execute_binding(struct seat *seat, struct terminal *term,
 
     case BIND_ACTION_SCROLLBACK_DOWN_MOUSE:
         if (term->grid == &term->alt) {
-            if (term->alt_scrolling)
+            if (term->alt_scrolling) {
                 alternate_scroll(seat, amount, BTN_FORWARD);
-        } else
+                return true;
+            }
+        } else {
             cmd_scrollback_down(term, amount);
+            return true;
+        }
         break;
 
     case BIND_ACTION_SCROLLBACK_HOME:
@@ -535,7 +543,7 @@ execute_binding(struct seat *seat, struct terminal *term,
     case BIND_ACTION_SELECT_QUOTE:
         selection_start(
             term, seat->mouse.col, seat->mouse.row, SELECTION_QUOTE_WISE, false);
-        break;
+        return true;
 
     case BIND_ACTION_SELECT_ROW:
         selection_start(

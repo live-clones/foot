@@ -126,10 +126,13 @@
   application (kitty keyboard protocol only) ([#2257][2257]).
 * Crash when application emits sixel RA with a height of 0, a width >
   0, and then starts writing sixel data ([#2267][2267]).
+* Crash if shutting down terminal instance while a "pre-apply damage"
+  thread is running ([#2263][2263]).
 
 [2232]: https://codeberg.org/dnkl/foot/issues/2232
 [2257]: https://codeberg.org/dnkl/foot/issues/2257
 [2267]: https://codeberg.org/dnkl/foot/issues/2267
+[2263]: https://codeberg.org/dnkl/foot/issues/2263
 
 
 ### Security

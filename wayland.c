@@ -2129,6 +2129,8 @@ wayl_win_destroy(struct wl_window *win)
 
     struct terminal *term = win->term;
 
+    render_wait_for_preapply_damage(term);
+
     if (win->csd.move_timeout_fd != -1)
         close(win->csd.move_timeout_fd);
 

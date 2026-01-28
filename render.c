@@ -2288,8 +2288,8 @@ render_worker_thread(void *_ctx)
     return -1;
 }
 
-static void
-wait_for_preapply_damage(struct terminal *term)
+void
+render_wait_for_preapply_damage(struct terminal *term)
 {
     if (!term->render.preapply_last_frame_damage)
         return;
@@ -3325,7 +3325,7 @@ grid_render(struct terminal *term)
                  term->render.workers.preapplied_damage.buf != NULL))
     {
         clock_gettime(CLOCK_MONOTONIC, &start_wait_preapply);
-        wait_for_preapply_damage(term);
+        render_wait_for_preapply_damage(term);
         clock_gettime(CLOCK_MONOTONIC, &stop_wait_preapply);
     }
 
@@ -4401,7 +4401,7 @@ delayed_reflow_of_normal_grid(struct terminal *term)
     term->interactive_resizing.old_hide_cursor = false;
 
     /* Invalidate render pointers */
-    wait_for_preapply_damage(term);
+    render_wait_for_preapply_damage(term);
     shm_unref(term->render.last_buf);
     term->render.last_buf = NULL;
     term->render.last_cursor.row = NULL;
@@ -4976,7 +4976,7 @@ damage_view:
     tll_free(term->normal.scroll_damage);
     tll_free(term->alt.scroll_damage);
 
-    wait_for_preapply_damage(term);
+    render_wait_for_preapply_damage(term);
     shm_unref(term->render.last_buf);
     term->render.last_buf = NULL;
     term_damage_view(term);

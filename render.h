@@ -49,3 +49,4 @@ struct csd_data {
 struct csd_data get_csd_data(const struct terminal *term, enum csd_surface surf_idx);
 
 void render_buffer_release_callback(struct buffer *buf, void *data);
+void render_wait_for_preapply_damage(struct terminal *term);

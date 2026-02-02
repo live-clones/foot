@@ -525,12 +525,14 @@ osc_uri(struct terminal *term, char *string)
             id = sdbm_hash(value);
     }
 
-    LOG_DBG("OSC-8: URL=%s, id=%" PRIu64, uri, id);
 
-    if (uri[0] == '\0')
+    if (uri[0] == '\0') {
+        LOG_DBG("OSC-8: close");
         term_osc8_close(term);
-    else
+    } else {
+        LOG_DBG("OSC-8: URL=%s, id=%" PRIu64, uri, id);
         term_osc8_open(term, id, uri);
+    }
 }
 
 static void

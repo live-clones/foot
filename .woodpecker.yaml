@@ -74,7 +74,7 @@ steps:
       # Release (clang)
       - mkdir -p bld/release-x64-clang
       - cd bld/release-x64-clang
-      - CC=clang meson setup --buildtype=release -Dgrapheme-clustering=enabled -Dfcft:grapheme-shaping=enabled -Dfcft:run-shaping=enabled  -Dfcft:test-text-shaping=true ../..
+      - CC=clang meson setup --buildtype=release -Dgrapheme-clustering=enabled -Dfcft:grapheme-shaping=enabled -Dfcft:run-shaping=enabled  -Dfcft:test-text-shaping=true -Dc_std=c2y ../..
       - ninja -v -k0
       - ninja -v test
       - ./foot --version
@@ -131,7 +131,7 @@ steps:
       # Release (clang)
       - mkdir -p bld/release-x86-clang
       - cd bld/release-x86-clang
-      - CC=clang meson setup --buildtype=release -Dgrapheme-clustering=enabled -Dfcft:grapheme-shaping=enabled -Dfcft:run-shaping=enabled -Dfcft:test-text-shaping=true ../..
+      - CC=clang meson setup --buildtype=release -Dgrapheme-clustering=enabled -Dfcft:grapheme-shaping=enabled -Dfcft:run-shaping=enabled -Dfcft:test-text-shaping=true -Dc_std=c1y ../..
       - ninja -v -k0
       - ninja -v test
       - ./foot --version

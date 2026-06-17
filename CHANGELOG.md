@@ -106,6 +106,8 @@
   ([#2364][2364]).
 * Escape quotes in file names being DnD:ed on the command line
   ([#2363][2363]).
+* Visual glitches when closing foot, on compositors doing
+  close-animations ([#2375][2375]).
 
 [2353]: https://codeberg.org/dnkl/foot/issues/2353
 [2352]: https://codeberg.org/dnkl/foot/issues/2352
@@ -114,6 +116,7 @@
 [2360]: https://codeberg.org/dnkl/foot/issues/2360
 [2370]: https://codeberg.org/dnkl/foot/issues/2370
 [2364]: https://codeberg.org/dnkl/foot/issues/2364
+[2375]: https://codeberg.org/dnkl/foot/issues/2375
 
 
 ### Security

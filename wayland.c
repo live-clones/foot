@@ -2193,9 +2193,31 @@ wayl_win_destroy(struct wl_window *win)
 
     struct terminal *term = win->term;
 
-    if (win->csd.move_timeout_fd != -1)
+    if (win->csd.move_timeout_fd != -1) {
         close(win->csd.move_timeout_fd);
+        win->csd.move_timeout_fd = -1;
+    }
 
+    /*
+     * Remove all references to *this* terminal instance from all
+     * seats.
+     *
+     * The clean way would be to unmap all surfaces, and roundtrip,
+     * triggering all the normal surface/pointer/keyboard leave
+     * events. But that causes glitches and bad animations on
+     * compositors that do close-animations.
+     */
+    tll_foreach(term->wl->seats, it) {
+        struct seat *seat = &it->item;
+        if (seat->kbd_focus == term)
+            seat->kbd_focus = NULL;
+        if (seat->mouse_focus == term)
+            seat->mouse_focus = NULL;
+        if (seat->ime_focus == term)
+            ime_disable(seat);
+    }
+
+#if 0
     /*
      * First, unmap all surfaces to trigger things like
      * keyboard_leave() and wl_pointer_leave().
@@ -2242,6 +2264,8 @@ wayl_win_destroy(struct wl_window *win)
     wl_surface_attach(win->surface.surf, NULL, 0, 0);
     wl_surface_commit(win->surface.surf);
     wayl_roundtrip(win->term->wl);
+#endif
+    render_wait_for_preapply_damage(term);
 
     tll_free(win->on_outputs);
 
@@ -2249,8 +2273,6 @@ wayl_win_destroy(struct wl_window *win)
         wayl_win_subsurface_destroy(&it->item.surf);
         tll_remove(win->urls, it);
     }
-
-    render_wait_for_preapply_damage(term);
 
     csd_destroy(win);
     wayl_win_subsurface_destroy(&win->search);

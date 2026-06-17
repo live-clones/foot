@@ -808,9 +808,11 @@ keyboard_leave(void *data, struct wl_keyboard *wl_keyboard, uint32_t serial,
          * keyboard_leave() (and keyboard_key()) without first having
          * received a keyboard_enter()
          */
+#if 0
         LOG_WARN(
             "compositor sent keyboard_leave event without a keyboard_enter "
             "event: surface=%p", (void *)surface);
+#endif
     }
 }
 
@@ -2575,9 +2577,11 @@ wl_pointer_leave(void *data, struct wl_pointer *wl_pointer,
 
     seat->mouse_focus = NULL;
     if (old_moused == NULL) {
+#if 0
         LOG_WARN(
             "compositor sent pointer_leave event without a pointer_enter "
             "event: surface=%p", (void *)surface);
+#endif
     } else {
         if (surface != NULL) {
             /* Sway 1.4 sends this event with a NULL surface when we destroy the window */

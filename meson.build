@@ -357,7 +357,7 @@ executable(
   'util.h',
   version,
   dependencies: [tllist, utf8proc],
-  link_with: common,
+  link_with: [common, misc],
   install: true)
 
 install_data(

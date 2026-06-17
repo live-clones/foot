@@ -33,6 +33,7 @@
 #include "util.h"
 #include "xmalloc.h"
 #include "xsnprintf.h"
+#include "uri.h"
 
 #if !defined(__STDC_UTF_32__) || !__STDC_UTF_32__
  #error "char32_t does not use UTF-32"
@@ -240,7 +241,7 @@ main(int argc, char *const *argv)
 
     bool check_config = false;
     const char *conf_path = NULL;
-    const char *custom_cwd = NULL;
+    char *custom_cwd = NULL;
     const char *pty_path = NULL;
     bool as_server = false;
     const char *conf_server_socket_path = NULL;
@@ -294,12 +295,34 @@ main(int argc, char *const *argv)
             break;
 
         case 'D': {
+            /* try to parse optarg as a local file URL. if it's not a
+               URL, use optarg directly */
+            char *scheme, *host, *path;
+            if (uri_parse(optarg, strlen(optarg), &scheme, NULL, NULL,
+                          &host, NULL, &path, NULL, NULL)) {
+                if (!(streq(scheme, "file") && hostname_is_localhost(host))) {
+                    fprintf(stderr, "error: %s: not a local path\n", optarg);
+                    free(scheme);
+                    free(host);
+                    free(path);
+                    return ret;
+                }
+
+                // ownership moved to custom_cwd, freed at out:
+                custom_cwd = path;
+                path = NULL;
+            } else
+                custom_cwd = xstrdup(optarg);
+
+            free(scheme);
+            free(host);
+            free(path);
+
             struct stat st;
-            if (stat(optarg, &st) < 0 || !(st.st_mode & S_IFDIR)) {
+            if (stat(custom_cwd, &st) < 0 || !(st.st_mode & S_IFDIR)) {
                 fprintf(stderr, "error: %s: not a directory\n", optarg);
                 return ret;
             }
-            custom_cwd = optarg;
             break;
         }
 
@@ -682,6 +705,7 @@ main(int argc, char *const *argv)
 
 out:
     free(_cwd);
+    free(custom_cwd);
     server_destroy(server);
     term_destroy(term);
 

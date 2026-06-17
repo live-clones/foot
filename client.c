@@ -24,6 +24,7 @@
 #include "macros.h"
 #include "util.h"
 #include "xmalloc.h"
+#include "uri.h"
 
 extern char **environ;
 
@@ -177,7 +178,7 @@ main(int argc, char *const *argv)
         {NULL,                 no_argument,       NULL,   0},
     };
 
-    const char *custom_cwd = NULL;
+    char *custom_cwd = NULL;
     const char *server_socket_path = NULL;
     enum log_class log_level = LOG_CLASS_WARNING;
     enum log_colorize log_colorize = LOG_COLORIZE_AUTO;
@@ -240,12 +241,34 @@ main(int argc, char *const *argv)
             break;
 
         case 'D': {
+            // try to parse optarg as a local file URL. if it's not a
+            // URL, use optarg directly
+            char *scheme, *host, *path;
+            if (uri_parse(optarg, strlen(optarg), &scheme, NULL, NULL,
+                          &host, NULL, &path, NULL, NULL)) {
+                if (!(streq(scheme, "file") && hostname_is_localhost(host))) {
+                    fprintf(stderr, "error: %s: not a local path\n", optarg);
+                    free(scheme);
+                    free(host);
+                    free(path);
+                    goto err;
+                }
+
+                // ownership moved to custom_cwd, freed at err:
+                custom_cwd = path;
+                path = NULL;
+            } else
+                custom_cwd = xstrdup(optarg);
+
+            free(scheme);
+            free(host);
+            free(path);
+
             struct stat st;
-            if (stat(optarg, &st) < 0 || !(st.st_mode & S_IFDIR)) {
+            if (stat(custom_cwd, &st) < 0 || !(st.st_mode & S_IFDIR)) {
                 fprintf(stderr, "error: %s: not a directory\n", optarg);
                 goto err;
             }
-            custom_cwd = optarg;
             break;
         }
 
@@ -598,6 +621,7 @@ err:
     free_string_list(&overrides);
     free(cargv);
     free(_cwd);
+    free(custom_cwd);
     if (fd != -1)
         close(fd);
     log_deinit();

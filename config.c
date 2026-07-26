@@ -106,6 +106,47 @@ static const uint32_t default_sixel_colors[16] = {
     0xffcccccc,
 };
 
+static const char *const default_url_regex_string =
+    "("
+        "("
+            "(https?://|mailto:|ftp://|file:|ssh:|ssh://|git://|tel:|magnet:|ipfs://|ipns://|gemini://|gopher://|news:)"
+            "|"
+            "www\\."
+        ")"
+        "("
+            /* Safe + reserved + some unsafe characters parenthesis and double quotes omitted (we only allow them when balanced) */
+            "[0-9a-zA-Z:/?#@!$&*+,;=.~_%^'\\-]+"
+            "|"
+             /* Balanced "(...)". Content is same as above, plus all _other_ characters we require to be balanced */
+            "\\([]\\[\"0-9a-zA-Z:/?#@!$&'*+,;=.~_%^\\-]+\\)"
+            "|"
+             /* Balanced "[...]". Content is same as above, plus all _other_ characters we require to be balanced */
+            "\\[[\\(\\)\"0-9a-zA-Z:/?#@!$&'*+,;=.~_%^\\-]+\\]"
+            "|"
+             /* Balanced '"..."'. Content is same as above, plus all _other_ characters we require to be balanced */
+            "\"[]\\[\\(\\)0-9a-zA-Z:/?#@!$&'*+,;=.~_%^\\-]+\""
+            "|"
+             /* Balanced "'...'". Content is same as above, plus all _other_ characters we require to be balanced */
+            "'[]\\[\\(\\)0-9a-zA-Z:/?#@!$&*+,;=.~_%^\\-]+'"
+        ")+"
+        "("
+            /* Same as above, except :?!,;.' are excluded */
+            "[0-9a-zA-Z/#@$&*+=~_%^\\-]"
+            "|"
+             /* Balanced "(...)". Content is same as above, plus all _other_ characters we require to be balanced */
+            "\\([]\\[\"0-9a-zA-Z:/?#@!$&'*+,;=.~_%^\\-]+\\)"
+            "|"
+             /* Balanced "[...]". Content is same as above, plus all _other_ characters we require to be balanced */
+            "\\[[\\(\\)\"0-9a-zA-Z:/?#@!$&'*+,;=.~_%^\\-]+\\]"
+            "|"
+             /* Balanced '"..."'. Content is same as above, plus all _other_ characters we require to be balanced */
+            "\"[]\\[\\(\\)0-9a-zA-Z:/?#@!$&'*+,;=.~_%^\\-]+\""
+            "|"
+             /* Balanced "'...'". Content is same as above, plus all _other_ characters we require to be balanced */
+            "'[]\\[\\(\\)0-9a-zA-Z:/?#@!$&*+,;=.~_%^\\-]+'"
+        ")"
+    ")";
+
 static const char *const binding_action_map[] = {
     [BIND_ACTION_NONE] = NULL,
     [BIND_ACTION_NOOP] = "noop",
@@ -3654,50 +3695,10 @@ config_load(struct config *conf, const char *conf_path,
     tokenize_cmdline("xdg-open ${url}", &conf->url.launch.argv.args);
 
     {
-    const char *url_regex_string =
-        "("
-            "("
-                "(https?://|mailto:|ftp://|file:|ssh:|ssh://|git://|tel:|magnet:|ipfs://|ipns://|gemini://|gopher://|news:)"
-                "|"
-                "www\\."
-            ")"
-            "("
-                /* Safe + reserved + some unsafe characters parenthesis and double quotes omitted (we only allow them when balanced) */
-                "[0-9a-zA-Z:/?#@!$&*+,;=.~_%^\\-]+"
-                "|"
-                 /* Balanced "(...)". Content is same as above, plus all _other_ characters we require to be balanced */
-                "\\([]\\[\"0-9a-zA-Z:/?#@!$&'*+,;=.~_%^\\-]*\\)"
-                "|"
-                 /* Balanced "[...]". Content is same as above, plus all _other_ characters we require to be balanced */
-                "\\[[\\(\\)\"0-9a-zA-Z:/?#@!$&'*+,;=.~_%^\\-]*\\]"
-                "|"
-                 /* Balanced '"..."'. Content is same as above, plus all _other_ characters we require to be balanced */
-                "\"[]\\[\\(\\)0-9a-zA-Z:/?#@!$&'*+,;=.~_%^\\-]*\""
-                "|"
-                 /* Balanced "'...'". Content is same as above, plus all _other_ characters we require to be balanced */
-                "'[]\\[\\(\\)0-9a-zA-Z:/?#@!$&*+,;=.~_%^\\-]*'"
-            ")+"
-            "("
-                /* Same as above, except :?!,;. are excluded */
-                "[0-9a-zA-Z/#@$&*+=~_%^\\-]"
-                "|"
-                 /* Balanced "(...)". Content is same as above, plus all _other_ characters we require to be balanced */
-                "\\([]\\[\"0-9a-zA-Z:/?#@!$&'*+,;=.~_%^\\-]*\\)"
-                "|"
-                 /* Balanced "[...]". Content is same as above, plus all _other_ characters we require to be balanced */
-                "\\[[\\(\\)\"0-9a-zA-Z:/?#@!$&'*+,;=.~_%^\\-]*\\]"
-                "|"
-                 /* Balanced '"..."'. Content is same as above, plus all _other_ characters we require to be balanced */
-                "\"[]\\[\\(\\)0-9a-zA-Z:/?#@!$&'*+,;=.~_%^\\-]*\""
-                "|"
-                 /* Balanced "'...'". Content is same as above, plus all _other_ characters we require to be balanced */
-                "'[]\\[\\(\\)0-9a-zA-Z:/?#@!$&*+,;=.~_%^\\-]*'"
-            ")"
-        ")";
 
-        int r = regcomp(&conf->url.preg, url_regex_string, REG_EXTENDED);
+        int r = regcomp(&conf->url.preg, default_url_regex_string, REG_EXTENDED);
         xassert(r == 0);
-        conf->url.regex = xstrdup(url_regex_string);
+        conf->url.regex = xstrdup(default_url_regex_string);
         xassert(conf->url.preg.re_nsub >= 1);
     }
 

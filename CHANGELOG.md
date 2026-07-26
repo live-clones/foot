@@ -87,9 +87,16 @@
 * Dracula theme updated to latest official, and light theme alucard
   added.
 * Sixels: pan/pad clamped to 5 ([#2371][2371]).
+* Default URL regex changed to:
+  + allow single quotes (`'`) _inside_ the URL (but not at the end,
+    unless balanced).
+  + require at least one character inside balanced `[]`, `()`, `''` or
+    `""`.
+  ([#2417][2417]).
 
 [2383]: https://codeberg.org/dnkl/foot/issues/2383
 [2371]: https://codeberg.org/dnkl/foot/issues/2371
+[2417]: https://codeberg.org/dnkl/foot/issues/2417
 
 
 ### Deprecated

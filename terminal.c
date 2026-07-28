@@ -2110,6 +2110,7 @@ term_reset(struct terminal *term, bool hard)
     term->insert_mode = false;
     term->bracketed_paste = false;
     term->focus_events = false;
+    term->visibility_reports = false;
     term->num_lock_modifier = true;
     term->bell_action_enabled = true;
     term->mouse_tracking = MOUSE_NONE;
@@ -3313,6 +3314,14 @@ term_visual_focus_out(struct terminal *term)
     term->visual_focus = false;
     term_cursor_blink_update(term);
     render_refresh_csd(term);
+}
+
+void
+term_send_visibility_report(struct terminal *term)
+{
+    term_to_slave(
+        term,
+        !term->window->is_suspended ? "\033[?999;1n" : "\033[?999;2n", 9);
 }
 
 void

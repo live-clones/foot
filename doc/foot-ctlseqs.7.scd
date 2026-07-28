@@ -340,6 +340,12 @@ that corresponds to one of the following modes:
 |  2031
 :  contour
 :  Request color theme updates
+|  2033
+:  rockorager
+:  Request terminal visibility reports. Enabling this mode immediately reports
+   the current visibility as *CSI ? 999 ; 1|2 n*, where *1* means potentially
+   visible and *2* means not visible. Further reports are sent whenever the
+   visibility changes.
 |  2048
 :  TODO
 :  In-band window resize notifications
@@ -667,6 +673,12 @@ manipulation sequences. The generic format is:
    997 ; 1|2 n*, where *1* means dark and *2* light. By convention, the
    primary theme in foot is considered dark, and the alternative theme
    light.
+|  \\E[ ? 998 n
+:  Query terminal visibility
+:  rockorager
+:  The current terminal visibility is reported as *CSI ? 999 ; 1|2 n*, where
+   *1* means potentially visible and *2* means not visible. This does not enable
+   private mode 2033.
 
 
 # OSC

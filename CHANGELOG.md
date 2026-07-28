@@ -76,6 +76,9 @@
 * Command line option `--class`, an alias for `--app-id`. Intended to
   be used by scripts and similar that wants to launch terminal
   instances in a terminal agnostic way ([#2368][2368]).
+* Support for [terminal visibility
+  reports](https://rockorager.dev/misc/visibility-reports/), using the
+  Wayland `xdg_toplevel` suspended state.
 
 [2368]: https://codeberg.org/dnkl/foot/issues/2368
 

@@ -439,6 +439,7 @@ struct terminal {
     bool reverse_wrap;
     bool bracketed_paste;
     bool focus_events;
+    bool visibility_reports;
     bool alt_scrolling;
     bool modify_other_keys_2;  /* True when modifyOtherKeys=2 (i.e. "CSI >4;2m") */
     enum cursor_origin origin;
@@ -523,6 +524,7 @@ struct terminal {
         bool cursor_blink:1;
         bool bracketed_paste:1;
         bool focus_events:1;
+        bool visibility_reports:1;
         bool alt_scrolling:1;
         //bool mouse_x10:1;
         bool mouse_click:1;
@@ -927,6 +929,7 @@ void term_restore_cursor(struct terminal *term, const struct cursor *cursor);
 
 void term_visual_focus_in(struct terminal *term);
 void term_visual_focus_out(struct terminal *term);
+void term_send_visibility_report(struct terminal *term);
 void term_kbd_focus_in(struct terminal *term);
 void term_kbd_focus_out(struct terminal *term);
 void term_mouse_down(

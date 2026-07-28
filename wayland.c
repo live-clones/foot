@@ -871,7 +871,7 @@ xdg_toplevel_configure(void *data, struct xdg_toplevel *xdg_toplevel,
     bool is_constrained_bottom = false;
     bool is_constrained_left = false;
     bool is_constrained_right = false;
-    bool is_suspended UNUSED = false;
+    bool is_suspended = false;
 
 #if defined(LOG_ENABLE_DBG) && LOG_ENABLE_DBG
     char state_str[2048];
@@ -951,6 +951,7 @@ xdg_toplevel_configure(void *data, struct xdg_toplevel *xdg_toplevel,
     struct wl_window *win = data;
 
     win->configure.is_activated = is_activated;
+    win->configure.is_suspended = is_suspended;
     win->configure.is_fullscreen = is_fullscreen;
     win->configure.is_maximized = is_maximized;
     win->configure.is_resizing = is_resizing;
@@ -1078,6 +1079,7 @@ xdg_surface_configure(void *data, struct xdg_surface *xdg_surface,
     bool wasnt_configured = !win->is_configured;
     bool was_resizing = win->is_resizing;
     bool was_fullscreen = win->is_fullscreen;
+    bool was_suspended = win->is_suspended;
     bool csd_was_enabled = win->csd_mode == CSD_YES && !win->is_fullscreen;
     int new_width = win->configure.width;
     int new_height = win->configure.height;
@@ -1086,6 +1088,7 @@ xdg_surface_configure(void *data, struct xdg_surface *xdg_surface,
     win->is_maximized = win->configure.is_maximized;
     win->is_fullscreen = win->configure.is_fullscreen;
     win->is_resizing = win->configure.is_resizing;
+    win->is_suspended = win->configure.is_suspended;
 
     win->is_tiled_top = win->configure.is_tiled_top;
     win->is_tiled_bottom = win->configure.is_tiled_bottom;
@@ -1147,6 +1150,9 @@ xdg_surface_configure(void *data, struct xdg_surface *xdg_surface,
         term_visual_focus_in(term);
     else
         term_visual_focus_out(term);
+
+    if (was_suspended != win->is_suspended && term->visibility_reports)
+        term_send_visibility_report(term);
 
     /*
      * Update opaque region if fullscreen state changed, also need to

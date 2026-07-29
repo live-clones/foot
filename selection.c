@@ -597,9 +597,13 @@ selection_find_quote_right(struct terminal *term, struct coord *pos, char32_t qu
 
         wc = row->cells[next_col].wc;
         if (wc == quote_char) {
-            pos->row = next_row;
-            pos->col = next_col - 1;
-            xassert(pos->col >= 0);
+            if (next_col == 0) {
+                pos->row = next_row - 1;
+                pos->col = term->cols - 1;
+            } else {
+                pos->row = next_row;
+                pos->col = next_col - 1;
+            }
             return true;
         }
     }

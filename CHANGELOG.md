@@ -128,6 +128,8 @@
   multi-column character in the last column ([#2411][2411]).
 * `reallocarray()` is no longer required, so as to support platforms
   where libc doesn't include it (e.g. Termux + Android API < 29).
+* Crash in `select-quote` when the right-side quote appeared right
+  after a newline, in column 0 ([#2405][2405]).
 
 [2353]: https://codeberg.org/dnkl/foot/issues/2353
 [2352]: https://codeberg.org/dnkl/foot/issues/2352
@@ -138,6 +140,7 @@
 [2364]: https://codeberg.org/dnkl/foot/issues/2364
 [2397]: https://codeberg.org/dnkl/foot/issues/2397
 [2411]: https://codeberg.org/dnkl/foot/issues/2411
+[2405]: https://codeberg.org/dnkl/foot/issues/2405
 
 
 ### Security

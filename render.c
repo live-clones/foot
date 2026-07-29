@@ -4382,6 +4382,9 @@ delayed_reflow_of_normal_grid(struct terminal *term)
 
     xassert(term->interactive_resizing.new_rows > 0);
 
+    if (term->grid == &term->normal)
+        term->selection.coords = term->interactive_resizing.selection_coords;
+
     struct coord *const tracking_points[] = {
         &term->selection.coords.start,
         &term->selection.coords.end,
@@ -4409,6 +4412,7 @@ delayed_reflow_of_normal_grid(struct terminal *term)
     term->interactive_resizing.old_screen_rows = 0;
     term->interactive_resizing.new_rows = 0;
     term->interactive_resizing.old_hide_cursor = false;
+    term->interactive_resizing.selection_coords = (struct range){{-1, -1}, {-1, -1}};
 
     /* Invalidate render pointers */
     render_wait_for_preapply_damage(term);
@@ -4760,8 +4764,11 @@ render_resize(struct terminal *term, int width, int height, uint8_t opts)
             term->interactive_resizing.grid = xmalloc(sizeof(*term->interactive_resizing.grid));
             *term->interactive_resizing.grid = term->normal;
 
-            if (term->grid == &term->normal)
+            if (term->grid == &term->normal) {
                 term->interactive_resizing.selection_coords = term->selection.coords;
+                term->selection.coords.start.row -= term->grid->view;
+                term->selection.coords.end.row -= term->grid->view;
+            }
         } else {
             /* We'll replace the current temporary grid, with a new
              * one (again based on the original grid) */
@@ -4798,9 +4805,6 @@ render_resize(struct terminal *term, int width, int height, uint8_t opts)
             .sixel_images = tll_init(),
             .kitty_kbd = orig->kitty_kbd,
         };
-
-        term->selection.coords.start.row -= orig->view;
-        term->selection.coords.end.row -= orig->view;
 
         for (size_t i = 0, j = orig->view;
              i < term->interactive_resizing.old_screen_rows;

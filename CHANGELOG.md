@@ -130,6 +130,7 @@
   where libc doesn't include it (e.g. Termux + Android API < 29).
 * Crash in `select-quote` when the right-side quote appeared right
   after a newline, in column 0 ([#2405][2405]).
+* Resizing a terminal window may break current selection.
 
 [2353]: https://codeberg.org/dnkl/foot/issues/2353
 [2352]: https://codeberg.org/dnkl/foot/issues/2352

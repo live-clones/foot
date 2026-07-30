@@ -1536,10 +1536,10 @@ handle_global(void *data, struct wl_registry *registry,
         const uint32_t preferred = required;
 #endif
 
-        wayl->shape_manager_version = min(required, preferred);
+        wayl->shape_manager_version = min(version, preferred);
         wayl->cursor_shape_manager = wl_registry_bind(
             wayl->registry, name, &wp_cursor_shape_manager_v1_interface,
-            min(required, preferred));
+            wayl->shape_manager_version);
     }
 
     else if (streq(interface, wp_single_pixel_buffer_manager_v1_interface.name)) {

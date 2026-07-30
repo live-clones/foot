@@ -598,6 +598,10 @@ selection_find_quote_right(struct terminal *term, struct coord *pos, char32_t qu
         wc = row->cells[next_col].wc;
         if (wc == quote_char) {
             if (next_col == 0) {
+                /* Selection coordinates are view-relative, and it
+                   isn't possible to have a right-side quote with
+                   next-col == 0 AND next_row == 0 */
+                xassert(next_row > 0);
                 pos->row = next_row - 1;
                 pos->col = term->cols - 1;
             } else {

@@ -1588,6 +1588,24 @@ handle_global(void *data, struct wl_registry *registry,
             wayl->color_management.manager, &color_manager_listener, wayl);
     }
 
+#if defined(WL_FIXES_INTERFACE)
+    else if (streq(interface, wl_fixes_interface.name)) {
+        const uint32_t required = 1;
+        if (!verify_iface_version(interface, version, required))
+            return;
+
+#if defined(WL_FIXES_ACK_GLOBAL_REMOVE_SINCE_VERSION)
+        const uint32_t preferred = WL_FIXES_ACK_GLOBAL_REMOVE_SINCE_VERSION;
+#else
+        const uint32_t preferred = required;
+#endif
+
+        wayl->fixes_version = min(version, preferred);
+        wayl->fixes = wl_registry_bind(
+            wayl->registry, name, &wl_fixes_interface, wayl->fixes_version);
+    }
+#endif
+
 #if defined(HAVE_XDG_TOPLEVEL_TAG)
     else if (streq(interface, xdg_toplevel_tag_manager_v1_interface.name)) {
         const uint32_t required = 1;
@@ -1678,7 +1696,7 @@ handle_global_remove(void *data, struct wl_registry *registry, uint32_t name)
 
         monitor_destroy(mon);
         tll_remove(wayl->monitors, it);
-        return;
+        goto ack_remove;
     }
 
     /* A seat? */
@@ -1712,10 +1730,20 @@ handle_global_remove(void *data, struct wl_registry *registry, uint32_t name)
 
         seat_destroy(seat);
         tll_remove(wayl->seats, it);
-        return;
+        goto ack_remove;
     }
 
     LOG_WARN("unknown global removed: 0x%08x", name);
+
+ack_remove:
+    ;
+#if defined(WL_FIXES_ACK_GLOBAL_REMOVE_SINCE_VERSION)
+    if (wayl->fixes != NULL &&
+        wayl->fixes_version >= WL_FIXES_ACK_GLOBAL_REMOVE_SINCE_VERSION)
+    {
+        wl_fixes_ack_global_remove(wayl->fixes, wayl->registry, name);
+    }
+#endif
 }
 
 static const struct wl_registry_listener registry_listener = {
@@ -1987,6 +2015,10 @@ wayl_destroy(struct wayland *wayl)
         wl_subcompositor_destroy(wayl->sub_compositor);
     if (wayl->compositor != NULL)
         wl_compositor_destroy(wayl->compositor);
+#if defined(WL_FIXES_INTERFACE)
+    if (wayl->fixes != NULL)
+        wl_fixes_destroy(wayl->fixes);
+#endif
     if (wayl->registry != NULL)
         wl_registry_destroy(wayl->registry);
     if (wayl->fd != -1)

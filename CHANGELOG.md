@@ -79,6 +79,7 @@
 * Support for [terminal visibility
   reports](https://rockorager.dev/misc/visibility-reports/), using the
   Wayland `xdg_toplevel` suspended state.
+* Support for `wl_fixes::ack_global_remove()`.
 
 [2368]: https://codeberg.org/dnkl/foot/issues/2368
 

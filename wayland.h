@@ -457,6 +457,10 @@ struct wayland {
 
     struct wl_display *display;
     struct wl_registry *registry;
+#if defined(WL_FIXES_INTERFACE)
+    struct wl_fixes *fixes;
+    int fixes_version;
+#endif
     struct wl_compositor *compositor;
     struct wl_subcompositor *sub_compositor;
     struct wl_shm *shm;

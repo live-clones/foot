@@ -139,6 +139,7 @@
 [2360]: https://codeberg.org/dnkl/foot/issues/2360
 [2370]: https://codeberg.org/dnkl/foot/issues/2370
 [2364]: https://codeberg.org/dnkl/foot/issues/2364
+[2363]: https://codeberg.org/dnkl/foot/issues/2363
 [2397]: https://codeberg.org/dnkl/foot/issues/2397
 [2411]: https://codeberg.org/dnkl/foot/issues/2411
 [2405]: https://codeberg.org/dnkl/foot/issues/2405

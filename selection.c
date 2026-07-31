@@ -795,10 +795,12 @@ pixman_region_for_coords_normal(const struct terminal *term,
 
     if (rel_start_row < rel_end_row) {
         /* First partial row (start ->)*/
-        pixman_region32_union_rect(
-            &region, &region,
-            start->col, rel_start_row,
-            term->cols - start->col, 1);
+        if (term->cols > start->col) {
+            pixman_region32_union_rect(
+                &region, &region,
+                start->col, rel_start_row,
+                term->cols - start->col, 1);
+        }
 
         /* Full rows between start and end */
         if (rel_start_row + 1 < rel_end_row) {
@@ -816,10 +818,12 @@ pixman_region_for_coords_normal(const struct terminal *term,
 
     } else if (rel_start_row > rel_end_row) {
         /* First partial row (end ->) */
-        pixman_region32_union_rect(
-            &region, &region,
-            end->col, rel_end_row,
-            term->cols - end->col, 1);
+        if (term->cols > end->col) {
+            pixman_region32_union_rect(
+                &region, &region,
+                end->col, rel_end_row,
+                term->cols - end->col, 1);
+        }
 
         /* Full rows between end and start */
         if (rel_end_row + 1 < rel_start_row) {

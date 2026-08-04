@@ -271,9 +271,11 @@ notif_done(struct reaper *reaper, pid_t pid, int status, void *data)
             LOG_DBG("focus window on notification activation: \"%s\"",
                     notif->xdg_token);
 
-            if (notif->xdg_token == NULL)
-                LOG_WARN("cannot focus window: no activation token available");
-            else
+            if (notif->xdg_token == NULL) {
+                /* No token so request our own and let the compositor decide focus vs. urgency */
+                if (!wayl_win_set_urgent(term->window))
+                    LOG_WARN("cannot focus window: no activation token available");
+            } else
                 wayl_activate(term->wl, term->window, notif->xdg_token);
         }
 

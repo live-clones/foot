@@ -233,6 +233,7 @@ struct grid {
      */
     struct cursor cursor;
     struct cursor saved_cursor;
+    struct attributes saved_attrs;
 
     struct row **rows;
     struct row *cur_row;
@@ -277,7 +278,6 @@ struct vt {
     uint32_t private; /* LSB=priv0, MSB=priv3 */
 
     struct attributes attrs;
-    struct attributes saved_attrs;
 
     struct {
         uint8_t *data;

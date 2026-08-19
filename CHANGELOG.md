@@ -137,6 +137,7 @@
 * Crash in `select-quote` when the right-side quote appeared right
   after a newline, in column 0 ([#2405][2405]).
 * Resizing a terminal window may break current selection.
+* Crash when closing a window that touch input focus.
 
 [2353]: https://codeberg.org/dnkl/foot/issues/2353
 [2352]: https://codeberg.org/dnkl/foot/issues/2352

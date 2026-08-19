@@ -2235,6 +2235,23 @@ wayl_win_destroy(struct wl_window *win)
         close(win->csd.move_timeout_fd);
 
     /*
+     * wl_touch has no leave event, so the unmapping below cannot drop touch
+     * focus the way it drops keyboard and pointer focus. Reset it here, or a
+     * wl_touch.up/motion dispatched from the roundtrips below runs against
+     * this window after it has been destroyed.
+     */
+    tll_foreach(term->wl->seats, it) {
+        struct seat *seat = &it->item;
+
+        if (seat->touch.surface != NULL &&
+            wl_surface_get_user_data(seat->touch.surface) == win)
+        {
+            seat->touch.state = TOUCH_STATE_IDLE;
+            seat->touch.surface = NULL;
+        }
+    }
+
+    /*
      * First, unmap all surfaces to trigger things like
      * keyboard_leave() and wl_pointer_leave().
      *

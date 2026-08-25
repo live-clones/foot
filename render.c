@@ -4082,7 +4082,7 @@ render_urls(struct terminal *term)
            + term->grid->num_rows) & (term->grid->num_rows - 1);
     const int view_end = view_start + term->rows - 1;
 
-    const bool show_url = term->urls_show_uri_on_jump_label;
+    const bool show_url = term->url.show_uri_on_jump_label;
 
     /*
      * There can potentially be a lot of URLs.
@@ -4126,7 +4126,7 @@ render_urls(struct terminal *term)
     tll_foreach(win->urls, it) {
         const struct url *url = it->item.url;
         const char32_t *key = url->key;
-        const size_t entered_key_len = c32len(term->url_keys);
+        const size_t entered_key_len = c32len(term->url.keys);
 
         if (key == NULL) {
             /* TODO: if we decide to use the .text field, we cannot
@@ -4151,7 +4151,7 @@ render_urls(struct terminal *term)
             hide = true;
         if (c32len(key) <= entered_key_len)
             hide = true;
-        if (c32ncasecmp(term->url_keys, key, entered_key_len) != 0)
+        if (c32ncasecmp(term->url.keys, key, entered_key_len) != 0)
             hide = true;
 
         if (hide) {
@@ -4330,8 +4330,8 @@ frame_callback(void *data, struct wl_callback *wl_callback, uint32_t callback_da
 
     struct grid *original_grid = term->grid;
     if (urls_mode_is_active(term)) {
-        xassert(term->url_grid_snapshot != NULL);
-        term->grid = term->url_grid_snapshot;
+        xassert(term->url.grid_snapshot != NULL);
+        term->grid = term->url.grid_snapshot;
     }
 
     if (csd && term->window->csd_mode == CSD_YES) {
@@ -5173,8 +5173,8 @@ fdm_hook_refresh_pending_terminals(struct fdm *fdm, void *data)
         if (term->window->frame_callback == NULL) {
             struct grid *original_grid = term->grid;
             if (urls_mode_is_active(term)) {
-                xassert(term->url_grid_snapshot != NULL);
-                term->grid = term->url_grid_snapshot;
+                xassert(term->url.grid_snapshot != NULL);
+                term->grid = term->url.grid_snapshot;
             }
 
             if (csd && term->window->csd_mode == CSD_YES) {

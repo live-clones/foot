@@ -358,8 +358,8 @@ execute_binding(struct seat *seat, struct terminal *term,
             action == BIND_ACTION_SHOW_URLS_LAUNCH ? URL_ACTION_LAUNCH :
             URL_ACTION_PERSISTENT;
 
-        urls_collect(term, url_action, &term->conf->url.preg, true, &term->urls);
-        urls_assign_key_combos(term->conf, &term->urls);
+        urls_collect(term, url_action, &term->conf->url.preg, true, &term->url.list);
+        urls_assign_key_combos(term->conf, &term->url.list);
         urls_render(term, &term->conf->url.launch);
         return true;
     }
@@ -480,8 +480,8 @@ execute_binding(struct seat *seat, struct terminal *term,
                     return true;
                 }
 
-                urls_collect(term, url_action, &regex->preg, false, &term->urls);
-                urls_assign_key_combos(term->conf, &term->urls);
+                urls_collect(term, url_action, &regex->preg, false, &term->url.list);
+                urls_assign_key_combos(term->conf, &term->url.list);
                 urls_render(term, &regex->launch);
                 return true;
             }

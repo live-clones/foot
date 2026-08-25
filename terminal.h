@@ -793,13 +793,14 @@ struct terminal {
         unsigned max_height;    /* Maximum image height, in pixels */
     } sixel;
 
-    /* TODO: wrap in a struct */
-    url_list_t urls;
-    char32_t url_keys[5];
-    bool urls_show_uri_on_jump_label;
-    struct grid *url_grid_snapshot;
-    bool ime_reenable_after_url_mode;
-    const struct config_spawn_template *url_launch;
+    struct {
+        url_list_t list;
+        char32_t keys[5];
+        bool show_uri_on_jump_label;
+        struct grid *grid_snapshot;
+        bool ime_reenable_after_url_mode;
+        const struct config_spawn_template *launch;
+    } url;
 
 #if defined(FOOT_IME_ENABLED) && FOOT_IME_ENABLED
     bool ime_enabled;

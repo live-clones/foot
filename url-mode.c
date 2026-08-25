@@ -41,7 +41,7 @@ execute_binding(struct seat *seat, struct terminal *term,
         return true;
 
     case BIND_ACTION_URL_TOGGLE_URL_ON_JUMP_LABEL:
-         term->urls_show_uri_on_jump_label = !term->urls_show_uri_on_jump_label;
+        term->url.show_uri_on_jump_label = !term->url.show_uri_on_jump_label;
         render_refresh_urls(term);
         return true;
 
@@ -67,11 +67,11 @@ spawn_url_launcher_with_token(struct terminal *term,
         return false;
     }
 
-    xassert(term->url_launch != NULL);
+    xassert(term->url.launch != NULL);
     bool ret = false;
 
     if (spawn_expand_template(
-            term->url_launch, 2,
+            term->url.launch, 2,
             (const char *[]){"url", "match"},
             (const char *[]){url, url},
             &argc, &argv))
@@ -108,7 +108,7 @@ static bool
 spawn_url_launcher(struct seat *seat, struct terminal *term, const char *url,
                    uint32_t serial)
 {
-    xassert(term->url_launch != NULL);
+    xassert(term->url.launch != NULL);
 
     struct spawn_activation_context *ctx = xmalloc(sizeof(*ctx));
     *ctx = (struct spawn_activation_context){
@@ -240,11 +240,11 @@ urls_input(struct seat *seat, struct terminal *term,
         }
     }
 
-    size_t seq_len = c32len(term->url_keys);
+    size_t seq_len = c32len(term->url.keys);
 
     if (sym == XKB_KEY_BackSpace) {
         if (seq_len > 0) {
-            term->url_keys[seq_len - 1] = U'\0';
+            term->url.keys[seq_len - 1] = U'\0';
             render_refresh_urls(term);
         }
 
@@ -265,7 +265,7 @@ urls_input(struct seat *seat, struct terminal *term,
     bool is_valid = false;
     const struct url *match = NULL;
 
-    tll_foreach(term->urls, it) {
+    tll_foreach(term->url.list, it) {
         if (it->item.key == NULL)
             continue;
 
@@ -273,7 +273,7 @@ urls_input(struct seat *seat, struct terminal *term,
         const size_t key_len = c32len(it->item.key);
 
         if (key_len >= seq_len + 1 &&
-            c32ncasecmp(url->key, term->url_keys, seq_len) == 0 &&
+            c32ncasecmp(url->key, term->url.keys, seq_len) == 0 &&
             toc32lower(url->key[seq_len]) == toc32lower(wc))
         {
             is_valid = true;
@@ -296,15 +296,15 @@ urls_input(struct seat *seat, struct terminal *term,
             break;
 
         case URL_ACTION_PERSISTENT:
-            term->url_keys[0] = U'\0';
+            term->url.keys[0] = U'\0';
             render_refresh_urls(term);
             break;
         }
     }
 
     else if (is_valid) {
-        xassert(seq_len + 1 <= ALEN(term->url_keys));
-        term->url_keys[seq_len] = wc;
+        xassert(seq_len + 1 <= ALEN(term->url.keys));
+        term->url.keys[seq_len] = wc;
         render_refresh_urls(term);
     }
 }
@@ -554,7 +554,7 @@ void
 urls_collect(const struct terminal *term, enum url_action action,
              const regex_t *preg, bool osc8, url_list_t *urls)
 {
-    xassert(tll_length(term->urls) == 0);
+    xassert(tll_length(term->url.list) == 0);
     if (osc8)
         osc8_uris(term, action, urls);
     regex_detected(term, action, preg, urls);
@@ -690,7 +690,7 @@ tag_cells_for_url(struct terminal *term, const struct url *url, bool value)
     if (url->url_mode_dont_change_url_attr)
         return;
 
-    struct grid *grid = term->url_grid_snapshot;
+    struct grid *grid = term->url.grid_snapshot;
     xassert(grid != NULL);
 
     const struct coord *start = &url->range.start;
@@ -732,12 +732,12 @@ urls_render(struct terminal *term, const struct config_spawn_template *launch)
 {
     struct wl_window *win = term->window;
 
-    if (tll_length(win->term->urls) == 0)
+    if (tll_length(win->term->url.list) == 0)
         return;
 
     /* Disable IME while in URL-mode */
     if (term_ime_is_enabled(term)) {
-        term->ime_reenable_after_url_mode = true;
+        term->url.ime_reenable_after_url_mode = true;
         term_ime_disable(term);
     }
 
@@ -761,13 +761,13 @@ urls_render(struct terminal *term, const struct config_spawn_template *launch)
     term_damage_view(term);
 
     /* Snapshot the current grid */
-    term->url_grid_snapshot = grid_snapshot(term->grid);
+    term->url.grid_snapshot = grid_snapshot(term->grid);
 
     /* Remember which launcher to use */
-    term->url_launch = launch;
+    term->url.launch = launch;
 
     xassert(tll_length(win->urls) == 0);
-    tll_foreach(win->term->urls, it) {
+    tll_foreach(win->term->url.list, it) {
         struct wl_url url = {.url = &it->item};
         wayl_win_subsurface_new(win, &url.surf, false);
 
@@ -789,14 +789,14 @@ url_destroy(struct url *url)
 void
 urls_reset(struct terminal *term)
 {
-    if (likely(tll_length(term->urls) == 0)) {
-        xassert(term->url_grid_snapshot == NULL);
+    if (likely(tll_length(term->url.list) == 0)) {
+        xassert(term->url.grid_snapshot == NULL);
         return;
     }
 
-    grid_free(term->url_grid_snapshot);
-    free(term->url_grid_snapshot);
-    term->url_grid_snapshot = NULL;
+    grid_free(term->url.grid_snapshot);
+    free(term->url.grid_snapshot);
+    term->url.grid_snapshot = NULL;
 
     /*
      * Make sure "last cursor" doesn't point to a row in the just
@@ -815,17 +815,17 @@ urls_reset(struct terminal *term)
         }
     }
 
-    tll_foreach(term->urls, it) {
+    tll_foreach(term->url.list, it) {
         url_destroy(&it->item);
-        tll_remove(term->urls, it);
+        tll_remove(term->url.list, it);
     }
 
-    term->urls_show_uri_on_jump_label = false;
-    memset(term->url_keys, 0, sizeof(term->url_keys));
+    term->url.show_uri_on_jump_label = false;
+    memset(term->url.keys, 0, sizeof(term->url.keys));
 
     /* Re-enable IME, if it was enabled before we entered URL-mode */
-    if (term->ime_reenable_after_url_mode) {
-        term->ime_reenable_after_url_mode = false;
+    if (term->url.ime_reenable_after_url_mode) {
+        term->url.ime_reenable_after_url_mode = false;
         term_ime_enable(term);
     }
 

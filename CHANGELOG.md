@@ -141,6 +141,8 @@
 * Crash when closing a window that touch input focus.
 * Application mouse grabbing not working when there is no keymap
   available.
+* Crash when a buggy compositor sends a `keyboard_enter()` event with
+  a `NULL` surface ([#2438][2438]).
 
 [2353]: https://codeberg.org/dnkl/foot/issues/2353
 [2352]: https://codeberg.org/dnkl/foot/issues/2352
@@ -153,6 +155,7 @@
 [2397]: https://codeberg.org/dnkl/foot/issues/2397
 [2411]: https://codeberg.org/dnkl/foot/issues/2411
 [2405]: https://codeberg.org/dnkl/foot/issues/2405
+[2438]: https://codeberg.org/dnkl/foot/issues/2438
 
 
 ### Security

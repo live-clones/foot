@@ -704,8 +704,12 @@ static void
 keyboard_enter(void *data, struct wl_keyboard *wl_keyboard, uint32_t serial,
                struct wl_surface *surface, struct wl_array *keys)
 {
-    xassert(surface != NULL);
     xassert(serial != 0);
+
+    if (unlikely(surface == NULL)) {
+        /* Seen on Hyprland */
+        return;
+    }
 
     struct seat *seat = data;
     struct wl_window *win = wl_surface_get_user_data(surface);

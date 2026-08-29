@@ -35,6 +35,7 @@
 #include "cursor-shape.h"
 #include "grid.h"
 #include "ime.h"
+#include "input.h"
 #include "quirks.h"
 #include "search.h"
 #include "selection.h"
@@ -4854,6 +4855,13 @@ render_resize(struct terminal *term, int width, int height, uint8_t opts)
             if (it->item.kbd_focus == term)
                 selection_finalize(&it->item, term, it->item.pointer.serial);
         }
+    }
+
+    /* Ensure mouse col/row coordinates are still valid */
+    tll_foreach(term->wl->seats, it) {
+        struct seat *seat = &it->item;
+        if (seat->mouse_focus == term)
+            mouse_coord_pixel_to_cell(seat, term, seat->mouse.x, seat->mouse.y);
     }
 
     /*

@@ -143,6 +143,9 @@
   available.
 * Crash when a buggy compositor sends a `keyboard_enter()` event with
   a `NULL` surface ([#2438][2438]).
+* Crash when clicking without moving the mouse after resizing the
+  window, and the clicked area is now outside the cell grid
+  ([#2435][2435]).
 
 [2353]: https://codeberg.org/dnkl/foot/issues/2353
 [2352]: https://codeberg.org/dnkl/foot/issues/2352
@@ -156,6 +159,7 @@
 [2411]: https://codeberg.org/dnkl/foot/issues/2411
 [2405]: https://codeberg.org/dnkl/foot/issues/2405
 [2438]: https://codeberg.org/dnkl/foot/issues/2438
+[2435]: https://codeberg.org/dnkl/foot/issues/2435
 
 
 ### Security

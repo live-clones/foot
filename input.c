@@ -2417,12 +2417,12 @@ mouse_button_state_reset(struct seat *seat)
     memset(&seat->mouse.last_time, 0, sizeof(seat->mouse.last_time));
 }
 
-static void
+ void
 mouse_coord_pixel_to_cell(struct seat *seat, const struct terminal *term,
                           int x, int y)
 {
     /*
-     * Translate x,y pixel coordinate to a cell coordinate, or -1
+     * Translate x,y pixel coordinate to a cell coordinate, or clamp
      * if the cursor is outside the grid. I.e. if it is inside the
      * margins.
      */

@@ -1738,7 +1738,7 @@ _action=none_; e.g. *primary-paste=none*.
 	of modifiers, e.g. _mod1+mod2+mod3_, as well as _none_) are used
 	to enable selecting text with the mouse irrespective of whether a
 	client application currently has the mouse grabbed.
-	These modifiers cannot be used as modifiers in mouse bindings.
+	Any combination of these modifiers cannot be used in mouse bindings.
 	Because the order of bindings is significant, it is best to set
 	this prior to any other mouse bindings that might use modifiers in
 	the default set.

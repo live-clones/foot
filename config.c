@@ -2230,7 +2230,25 @@ static bool
 modifiers_disjoint(const config_modifier_list_t *mods1,
                 const config_modifier_list_t *mods2)
 {
-    return !modifiers_equal(mods1, mods2);
+    size_t count = 0;
+    tll_foreach(*mods1, it1) {
+        size_t skip = count;
+        tll_foreach(*mods2, it2) {
+            if (skip > 0) {
+                --skip;
+                continue;
+            }
+
+            int r = strcmp(it1->item, it2->item);
+            if (r == 0)
+                return false;
+            if (r < 0)
+                break;
+
+            ++count;
+        }
+    }
+    return true;
 }
 
 static char * NOINLINE

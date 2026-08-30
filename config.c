@@ -2650,9 +2650,6 @@ resolve_key_binding_collisions(struct config *conf, const char *section_name,
                 char *override_names = modifiers_to_str(
                     &conf->mouse.selection_override_modifiers, true);
 
-                if (override_names[0] != '\0')
-                    override_names[strlen(override_names) - 1] = '\0';
-
                 LOG_AND_NOTIFY_ERR(
                     "%s:%d: [%s].%s: %s%s: "
                     "modifiers conflict with 'selection-override-modifiers=%s'",

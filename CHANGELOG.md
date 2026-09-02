@@ -1,6 +1,6 @@
 # Changelog
 
-* [Unreleased](#unreleased)
+* [1.28.0](#1-28-0)
 * [1.27.0](#1-27-0)
 * [1.26.1](#1-26-1)
 * [1.26.0](#1-26-0)
@@ -70,7 +70,8 @@
 * [1.2.0](#1-2-0)
 
 
-## Unreleased
+## 1.28.0
+
 ### Added
 
 * Command line option `--class`, an alias for `--app-id`. Intended to
@@ -106,7 +107,6 @@
 [2417]: https://codeberg.org/dnkl/foot/issues/2417
 
 
-### Deprecated
 ### Removed
 
 * `[colors]` and `[colors2]` config sections, and the corresponding
@@ -175,8 +175,22 @@
 [2435]: https://codeberg.org/dnkl/foot/issues/2435
 
 
-### Security
 ### Contributors
+
+* 0WD0
+* airkoala
+* aloires
+* Campbell Barton
+* CismonX
+* Craig Barnes
+* Emily Vlasics
+* fhqh
+* K4
+* koru
+* lumerue
+* Marinus Klasen
+* sentriz
+* Tim Culverhouse
 
 
 ## 1.27.0

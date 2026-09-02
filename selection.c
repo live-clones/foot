@@ -1256,6 +1256,19 @@ selection_update(struct terminal *term, int col, int row)
     const struct row *row_end = term->grid->rows[end_row_idx];
 
     /*
+     * Don't allow leading/trailing pad cells in the selection. Pull
+     * the start/endpoint that is inside the pad region into the
+     * multi-cell character, and then let the next step below move it
+     * to the beginning of the multi-cell character.
+     */
+    while (unlikely(row_start->cells[new_start.col].wc == CELL_SPACER)) {
+        new_start.col--;
+    }
+    while (unlikely(row_end->cells[new_end.col].wc == CELL_SPACER)) {
+        new_end.col--;
+    }
+
+    /*
      * If an end point is in the middle of a multi-column character,
      * expand the selection to cover the entire character.
      *

@@ -2323,8 +2323,6 @@ UNITTEST
     xassert(modifiers_disjoint(&mods1, &mods2));
     tll_free_and_free(mods1, free);
     tll_free_and_free(mods2, free);
-
-    printf("done\n");
 }
 
 static char * NOINLINE

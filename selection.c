@@ -1255,8 +1255,17 @@ selection_update(struct terminal *term, int col, int row)
     const struct row *row_start = term->grid->rows[start_row_idx];
     const struct row *row_end = term->grid->rows[end_row_idx];
 
-    /* If an end point is in the middle of a multi-column character,
-     * expand the selection to cover the entire character */
+    /*
+     * If an end point is in the middle of a multi-column character,
+     * expand the selection to cover the entire character.
+     *
+     * Note that we check for CELL_SPACER+0 *inclusive* when backing
+     * off. We do *not* want the point to be inside the pad area.
+     *
+     * But, we check for CELL_SPACER+0 *exclusive* when moving forward
+     * _into_ the multi-cell character. Again, because we do *not*
+     * want the point to be inside the pad area.
+     */
     if (new_start.row < new_end.row ||
         (new_start.row == new_end.row && new_start.col <= new_end.col))
     {
@@ -1264,14 +1273,14 @@ selection_update(struct terminal *term, int col, int row)
                row_start->cells[new_start.col].wc >= CELL_SPACER)
             new_start.col--;
         while (new_end.col < term->cols - 1 &&
-               row_end->cells[new_end.col + 1].wc >= CELL_SPACER)
+               row_end->cells[new_end.col + 1].wc > CELL_SPACER)
             new_end.col++;
     } else {
         while (new_end.col >= 1 &&
                row_end->cells[new_end.col].wc >= CELL_SPACER)
             new_end.col--;
         while (new_start.col < term->cols - 1 &&
-               row_start->cells[new_start.col + 1].wc >= CELL_SPACER)
+               row_start->cells[new_start.col + 1].wc > CELL_SPACER)
             new_start.col++;
     }
 

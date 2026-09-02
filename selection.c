@@ -928,7 +928,9 @@ mark_selected_region(struct terminal *term, pixman_box32_t *boxes,
             for (int c = box->x1, empty_count = 0; c < box->x2; c++) {
                 struct cell *cell = &row->cells[c];
 
-                if (cell->wc == 0 && !highlight_empty) {
+                if ((cell->wc == 0 || cell->wc == CELL_SPACER) &&
+                    !highlight_empty)
+                {
                     /*
                      * We used to highlight empty cells *if* they were
                      * followed by non-empty cell(s), since this

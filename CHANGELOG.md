@@ -146,6 +146,10 @@
 * Crash when clicking without moving the mouse after resizing the
   window, and the clicked area is now outside the cell grid
   ([#2435][2435]).
+* Modifiers in mouse-bindings colliding with the modifiers in
+  `selection-override-modifiers` not always detected.
+* `selection-override-modifiers=none` preventing applications from
+  grabbing the mouse.
 
 [2353]: https://codeberg.org/dnkl/foot/issues/2353
 [2352]: https://codeberg.org/dnkl/foot/issues/2352

@@ -2228,12 +2228,19 @@ UNITTEST
 
 static bool
 modifiers_disjoint(const config_modifier_list_t *mods1,
-                const config_modifier_list_t *mods2)
+                   const config_modifier_list_t *mods2)
 {
     size_t count = 0;
     tll_foreach(*mods1, it1) {
+        /*
+         * Both sets are sorted. Thus, if we're still here in
+         * iteration 2..N, then we can skip the first x items in set
+         * #2; we've already checked them against the previous items
+         * in set #1.
+         */
         size_t skip = count;
         tll_foreach(*mods2, it2) {
+
             if (skip > 0) {
                 --skip;
                 continue;
@@ -2249,6 +2256,75 @@ modifiers_disjoint(const config_modifier_list_t *mods1,
         }
     }
     return true;
+}
+
+UNITTEST
+{
+    config_modifier_list_t mods1 = tll_init();
+    config_modifier_list_t mods2 = tll_init();
+
+    /* Both empty counts as disjoint */
+    xassert(modifiers_disjoint(&mods1, &mods2));
+
+    /* Second set being empty means it's disjoint with the first, non-empty set */
+    tll_push_back(mods1, xstrdup("foo"));
+    tll_push_back(mods1, xstrdup("bar"));
+    tll_sort(mods1, strcmp);
+    tll_sort(mods2, strcmp);
+    xassert(modifiers_disjoint(&mods1, &mods2));
+    tll_free_and_free(mods1, free);
+    tll_free_and_free(mods2, free);
+
+    /* "foo" in both sets -> not disjoint */
+    tll_push_back(mods1, xstrdup("foo"));
+    tll_push_back(mods1, xstrdup("bar"));
+    tll_push_back(mods2, xstrdup("foo"));
+    tll_sort(mods1, strcmp);
+    tll_sort(mods2, strcmp);
+    xassert(!modifiers_disjoint(&mods1, &mods2));
+    tll_free_and_free(mods1, free);
+    tll_free_and_free(mods2, free);
+
+    /* "bar in both sets -> not disjoint */
+    tll_push_back(mods1, xstrdup("foo"));
+    tll_push_back(mods1, xstrdup("bar"));
+    tll_push_back(mods2, xstrdup("bar"));
+    tll_sort(mods1, strcmp);
+    tll_sort(mods2, strcmp);
+    xassert(!modifiers_disjoint(&mods1, &mods2));
+    tll_free_and_free(mods1, free);
+    tll_free_and_free(mods2, free);
+
+    /* "foo" and "bar" in both sets -> not disjoint */
+    tll_push_back(mods1, xstrdup("foo"));
+    tll_push_back(mods1, xstrdup("bar"));
+    tll_push_back(mods2, xstrdup("foo"));
+    tll_push_back(mods2, xstrdup("bar"));
+    tll_sort(mods1, strcmp);
+    tll_sort(mods2, strcmp);
+    xassert(!modifiers_disjoint(&mods1, &mods2));
+    tll_free_and_free(mods1, free);
+    tll_free_and_free(mods2, free);
+
+    /*
+     * Disjoint, with set #2 sorting most of it's items before the
+     * items in set #1. This tests the count/skip optimization in
+     * modifiers_disjoint().
+     */
+    tll_push_back(mods1, xstrdup("ddd"));
+    tll_push_back(mods1, xstrdup("eee"));
+    tll_push_back(mods1, xstrdup("fff"));
+    tll_push_back(mods2, xstrdup("aaa"));
+    tll_push_back(mods2, xstrdup("bbb"));
+    tll_push_back(mods2, xstrdup("ccc"));
+    tll_push_back(mods2, xstrdup("ggg"));
+    tll_sort(mods1, strcmp);
+    tll_sort(mods2, strcmp);
+    xassert(modifiers_disjoint(&mods1, &mods2));
+    tll_free_and_free(mods1, free);
+    tll_free_and_free(mods2, free);
+
+    printf("done\n");
 }
 
 static char * NOINLINE

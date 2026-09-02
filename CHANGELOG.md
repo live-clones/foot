@@ -109,9 +109,13 @@
 ### Deprecated
 ### Removed
 
-* `[colors]` and `[colors2]` config sections. These were deprecated in
-  1.26.0, and were replaced by `[colors-dark]` and `[colors-light]`.
+* `[colors]` and `[colors2]` config sections, and the corresponding
+  `color-theme-switch-1` and `color-theme-switch-2` key
+  bindings.
 
+  These were deprecated in 1.26.0, and were replaced by
+  `[colors-dark]`, `[colors-light]`, `color-theme-switch-dark` and
+  `color-theme-switch-light`.
 
 ### Fixed
 

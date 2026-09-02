@@ -183,8 +183,6 @@ static const char *const binding_action_map[] = {
     [BIND_ACTION_QUIT] = "quit",
     [BIND_ACTION_REGEX_LAUNCH] = "regex-launch",
     [BIND_ACTION_REGEX_COPY] = "regex-copy",
-    [BIND_ACTION_THEME_SWITCH_1] = "color-theme-switch-1",
-    [BIND_ACTION_THEME_SWITCH_2] = "color-theme-switch-2",
     [BIND_ACTION_THEME_SWITCH_DARK] = "color-theme-switch-dark",
     [BIND_ACTION_THEME_SWITCH_LIGHT] = "color-theme-switch-light",
     [BIND_ACTION_THEME_TOGGLE] = "color-theme-toggle",
@@ -2407,29 +2405,6 @@ parse_key_binding_section(struct context *ctx,
             aux.type = BINDING_AUX_REGEX;
             aux.master_copy = true;
             aux.regex_name = regex_name;
-        }
-
-        if (action_map == binding_action_map &&
-            action >= BIND_ACTION_THEME_SWITCH_1 &&
-            action <= BIND_ACTION_THEME_SWITCH_2)
-        {
-            const char *use_instead =
-                action_map[action == BIND_ACTION_THEME_SWITCH_1
-                    ? BIND_ACTION_THEME_SWITCH_DARK
-                    : BIND_ACTION_THEME_SWITCH_LIGHT];
-
-            const char *notif = action == BIND_ACTION_THEME_SWITCH_1
-                ? "[key-bindings].color-theme-switch-1: use [key-bindings].color-theme-switch-dark instead"
-                : "[key-bindings].color-theme-switch-2: use [key-bindings].color-theme-switch-light instead";
-
-            LOG_WARN("%s:%d: [key-bindings].%s: deprecated, use %s instead",
-                     ctx->path, ctx->lineno,
-                     action_map[action], use_instead);
-
-            user_notification_add(
-                &ctx->conf->notifications,
-                USER_NOTIFICATION_DEPRECATED,
-                xstrdup(notif));
         }
 
         if (!value_to_key_combos(ctx, action, &aux, bindings, KEY_BINDING)) {

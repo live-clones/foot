@@ -493,12 +493,10 @@ execute_binding(struct seat *seat, struct terminal *term,
 
         return true;
 
-    case BIND_ACTION_THEME_SWITCH_1:
     case BIND_ACTION_THEME_SWITCH_DARK:
         term_theme_switch_to_dark(term);
         return true;
 
-    case BIND_ACTION_THEME_SWITCH_2:
     case BIND_ACTION_THEME_SWITCH_LIGHT:
         term_theme_switch_to_light(term);
         return true;

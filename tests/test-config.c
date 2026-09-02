@@ -713,7 +713,7 @@ test_section_colors_dark(void)
     struct context ctx = {
         .conf = &conf, .section = "colors-dark", .path = "unittest"};
 
-    test_invalid_key(&ctx, &parse_section_colors, "invalid-key");
+    test_invalid_key(&ctx, &parse_section_colors_dark, "invalid-key");
 
     test_color(&ctx, &parse_section_colors_dark, "foreground", false, &conf.colors_dark.fg);
     test_color(&ctx, &parse_section_colors_dark, "background", false, &conf.colors_dark.bg);
@@ -794,7 +794,7 @@ test_section_colors_light(void)
     struct context ctx = {
         .conf = &conf, .section = "colors-light", .path = "unittest"};
 
-    test_invalid_key(&ctx, &parse_section_colors, "invalid-key");
+    test_invalid_key(&ctx, &parse_section_colors_light, "invalid-key");
 
     test_color(&ctx, &parse_section_colors_light, "foreground", false, &conf.colors_light.fg);
     test_color(&ctx, &parse_section_colors_light, "background", false, &conf.colors_light.bg);

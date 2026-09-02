@@ -108,6 +108,11 @@
 
 ### Deprecated
 ### Removed
+
+* `[colors]` and `[colors2]` config sections. These were deprecated in
+  1.26.0, and were replaced by `[colors-dark]` and `[colors-light]`.
+
+
 ### Fixed
 
 * Out-of-bounds read when parsing URIs with malformed %-encoded

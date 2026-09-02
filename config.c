@@ -1178,40 +1178,8 @@ parse_section_main(struct context *ctx)
             sizeof(conf->initial_color_theme) == sizeof(int),
             "enum is not 32-bit");
 
-        if (!value_to_enum(ctx, (const char*[]){
-            "dark", "light", "1", "2", NULL},
-                           (int *)&conf->initial_color_theme))
-            return false;
-
-        if (streq(ctx->value, "1")) {
-            LOG_WARN("%s:%d: [main].initial-color-theme=1 deprecated, "
-                     "use [main].initial-color-theme=dark instead",
-                     ctx->path, ctx->lineno);
-
-            user_notification_add(
-                &ctx->conf->notifications,
-                USER_NOTIFICATION_DEPRECATED,
-                xstrdup("[main].initial-color-theme=1: "
-                        "use [main].initial-color-theme=dark instead"));
-
-            conf->initial_color_theme = COLOR_THEME_DARK;
-        }
-
-        else if (streq(ctx->value, "2")) {
-            LOG_WARN("%s:%d: [main].initial-color-theme=2 deprecated, "
-                     "use [main].initial-color-theme=light instead",
-                     ctx->path, ctx->lineno);
-
-            user_notification_add(
-                &ctx->conf->notifications,
-                USER_NOTIFICATION_DEPRECATED,
-                xstrdup("[main].initial-color-theme=2: "
-                        "use [main].initial-color-theme=light instead"));
-
-            conf->initial_color_theme = COLOR_THEME_LIGHT;
-        }
-
-        return true;
+        return value_to_enum(ctx, (const char*[]){
+            "dark", "light", NULL}, (int *)&conf->initial_color_theme);
     }
 
     else if (streq(key, "uppercase-regex-insert"))
@@ -1667,34 +1635,6 @@ parse_section_colors_dark(struct context *ctx)
 static bool
 parse_section_colors_light(struct context *ctx)
 {
-    return parse_color_theme(ctx, &ctx->conf->colors_light);
-}
-
-static bool
-parse_section_colors(struct context *ctx)
-{
-    LOG_WARN("%s:%d: [colors]: deprecated; use [colors-dark] instead",
-             ctx->path, ctx->lineno);
-
-    user_notification_add(
-        &ctx->conf->notifications,
-        USER_NOTIFICATION_DEPRECATED,
-        xstrdup("[colors]: use [colors-dark] instead"));
-
-    return parse_color_theme(ctx, &ctx->conf->colors_dark);
-}
-
-static bool
-parse_section_colors2(struct context *ctx)
-{
-    LOG_WARN("%s:%d: [colors2]: deprecated; use [colors-light] instead",
-             ctx->path, ctx->lineno);
-
-    user_notification_add(
-        &ctx->conf->notifications,
-        USER_NOTIFICATION_DEPRECATED,
-        xstrdup("[colors2]: use [colors-light] instead"));
-
     return parse_color_theme(ctx, &ctx->conf->colors_light);
 }
 
@@ -3193,10 +3133,6 @@ enum section {
     SECTION_TWEAK,
     SECTION_TOUCH,
 
-    /* Deprecated */
-    SECTION_COLORS,
-    SECTION_COLORS2,
-
     SECTION_COUNT,
 };
 
@@ -3228,10 +3164,6 @@ static const struct {
     [SECTION_ENVIRONMENT] =     {&parse_section_environment, "environment"},
     [SECTION_TWEAK] =           {&parse_section_tweak, "tweak"},
     [SECTION_TOUCH] =           {&parse_section_touch, "touch"},
-
-    /* Deprecated */
-    [SECTION_COLORS] =          {&parse_section_colors, "colors"},
-    [SECTION_COLORS2] =         {&parse_section_colors2, "colors2"},
 };
 
 static_assert(ALEN(section_info) == SECTION_COUNT, "section info array size mismatch");

@@ -17,6 +17,8 @@ body:
         feature set is not sufficient. Foot is (trying to be) a
         minimalistic terminal emulator; explain how your desired
         feature does not add bloat.
+
+        **No generative AI / LLM generated feature requests!**
   - type: textarea
     id: request
     attributes:

@@ -34,13 +34,15 @@ The fast, lightweight and minimalistic Wayland terminal emulator.
 1. [Supported OSCs](#supported-oscs)
 1. [Programmatically checking if running in foot](#programmatically-checking-if-running-in-foot)
 1. [XTGETTCAP](#xtgettcap)
-1. [Credits](#Credits)
+1. [No AI / LLM policy](#no-ai-llm-policy)
+1. [Contributing](#contributing)
 1. [Code of Conduct](#code-of-conduct)
 1. [Bugs](#bugs)
 1. [Contact](#contact)
    1. [IRC](#irc)
    1. [Mastodon](#mastodon)
 1. [Sponsoring/donations](#sponsoring-donations)
+1. [Credits](#Credits)
 1. [License](#license)
 
 
@@ -646,10 +648,18 @@ will be answered with a response of the form `uname=$(uname -s)`,
 where `$(uname -s)` is the name of the OS foot was compiled for.
 
 
-# Credits
+# No AI / LLM policy
 
-* [Ordoviz](https://codeberg.org/Ordoviz), for designing and
-contributing foot's [logo](icons/hicolor/48x48/apps/foot.png).
+Use of generative AI/LLMs is strictly forbidden for **all**
+contributions to foot.
+
+This includes bug reports and comments on the issue and pull request
+trackers.
+
+
+# Contributing
+
+See [Contributing](CONTRIBUTING.md)
 
 
 # Code of Conduct
@@ -697,6 +707,12 @@ Every now and then I post foot related updates on
 * GitHub Sponsors: https://github.com/sponsors/dnkl
 
 [![Donate using Liberapay](https://liberapay.com/assets/widgets/donate.svg)](https://liberapay.com/dnkl/donate)
+
+
+# Credits
+
+* [Ordoviz](https://codeberg.org/Ordoviz), for designing and
+contributing foot's [logo](icons/hicolor/48x48/apps/foot.png).
 
 
 # License

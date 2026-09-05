@@ -426,11 +426,9 @@ shutdown:
     fdm_del(fdm, fd);
     client->fd = -1;
 
-    if (client->instance != NULL &&
-        !client->instance->terminal->shutdown.in_progress)
-    {
+    if (client->instance != NULL)
         term_shutdown(client->instance->terminal);
-    } else
+    else
         client_destroy(client);
 
     return true;

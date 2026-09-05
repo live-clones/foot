@@ -77,6 +77,13 @@
 ### Deprecated
 ### Removed
 ### Fixed
+
+* Use-after-free during shutdown when footclient and the client
+  application exit simultaneously in a short window ([#2432][2432]).
+
+[2342]: https://codeberg.org/dnkl/foot/pulls/2432
+
+
 ### Security
 ### Contributors
 

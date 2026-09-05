@@ -1048,7 +1048,7 @@ The default theme used is *colors-dark*, unless
 	
 	Example: *ff0000 00ff00* (green cursor, red text)
 	
-	Default: the regular foreground and background colors, reversed.
+	Default: current foreground and background colors, inversed.
 
 *foreground*
 	Default foreground color. This is the color used when no ANSI

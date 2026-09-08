@@ -74,6 +74,14 @@
 ## Unreleased
 ### Added
 ### Changed
+
+* Cells with a non-default background colors, but otherwise empty, are
+  now preserved (not removed) when resizing a terminal window
+  ([#2462][2462]).
+
+[2462]: https://codeberg.org/dnkl/foot/issues/2462
+
+
 ### Deprecated
 ### Removed
 ### Fixed

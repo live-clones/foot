@@ -927,7 +927,7 @@ grid_resize_and_reflow(
         int col_count = 0;
         for (int c = old_cols - 1; c >= 0; c--) {
             const struct cell *cell = &old_row->cells[c];
-            if (!(cell->wc == 0 || cell->wc == CELL_SPACER)) {
+            if (!(cell->wc == 0 || cell->wc == CELL_SPACER) || cell->attrs.bg_src != COLOR_DEFAULT) {
                 col_count = c + 1;
                 break;
             }

@@ -706,6 +706,7 @@ keyboard_enter(void *data, struct wl_keyboard *wl_keyboard, uint32_t serial,
 
     if (unlikely(surface == NULL)) {
         /* Seen on Hyprland */
+        LOG_WARN("compositor sent keyboard_enter event with a NULL surface");
         return;
     }
 

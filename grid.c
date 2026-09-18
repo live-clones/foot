@@ -1087,20 +1087,34 @@ grid_resize_and_reflow(
                     new_row->shell_integration.cmd_end = new_col_idx;
 
                 if (unlikely(width > new_cols)) {
-                    /* Wide character no longer fits on a row, replace
-                       it with a single space */
-                    new_row->cells[new_col_idx++].wc = 0;
-                    c++;
+                    /*
+                     * Wide character no longer fits on a row, replace
+                     * it with a single space.
+                     */
+                    if (i == 0) {
+                        /*
+                         * Don't increment new_col_idx here, to ensure
+                         * all the TP logic above maps to *this* cell
+                         * for the subsequent SPACER cells we're
+                         * skipping.
+                         */
+                        new_row->cells[new_col_idx] = *old;
+                        new_row->cells[new_col_idx].wc = 0;
+                    }
 
-                    /* Walk past the SPACER cells */
-                    for (int i = 1; i < width; i++, c++, old++)
-                        ;
-
-                    /* Continue with next character in the *old* grid */
-                    break;
+                    if (i == width - 1) {
+                        /*
+                         * Last SPACER - advance new_col_idx. This
+                         * ensures we're consistent with the above -
+                         * we've replaced a wide character with a
+                         * single, empty cell, and advanced
+                         * new_col_idx *once*.
+                         */
+                        new_col_idx++;
+                    }
+                } else {
+                    new_row->cells[new_col_idx++] = *old;
                 }
-
-                new_row->cells[new_col_idx++] = *old;
 
                 /*
                  * TODO: simulate LCF instead?

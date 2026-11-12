@@ -108,7 +108,20 @@ print_usage(const char *prog_name)
     puts(options);
 }
 
-bool
+static const char *
+get_foot_exe(void)
+{
+    /* Linux only, fallback to "foot" */
+    static char lnk[PATH_MAX];
+    ssize_t ret = readlink("/proc/self/exe", lnk, sizeof(lnk) - 1);
+    if (ret < 0)
+        return "foot";
+
+    lnk[ret] = '\0';
+    return lnk;
+}
+
+static bool
 locale_is_utf8(void)
 {
     static const char u8[] = u8"ö";
@@ -207,6 +220,12 @@ main(int argc, char *const *argv)
     /* Startup notifications; we don't support it, but must ensure we
      * don't pass this on to programs launched by us */
     unsetenv("DESKTOP_STARTUP_ID");
+
+    /* Temporary "clean" copy of argv, for term_init() */
+    const int foot_argc = argc;
+    const char *foot_argv[foot_argc];
+    for (int i = 0; i < foot_argc; i++)
+        foot_argv[i] = argv[i];
 
     const char *const prog_name = argc > 0 ? argv[0] : "<nullptr>";
 
@@ -649,8 +668,8 @@ main(int argc, char *const *argv)
         goto out;
 
     if (!as_server && (term = term_init(
-                           &conf, fdm, reaper, wayl, "foot", cwd, token, pty_path,
-                           argc, argv, NULL,
+                           &conf, fdm, reaper, wayl, get_foot_exe(), cwd, token, pty_path,
+                           argc, argv, NULL, foot_argc, foot_argv,
                            &term_shutdown_cb, &shutdown_ctx)) == NULL) {
         goto out;
     }

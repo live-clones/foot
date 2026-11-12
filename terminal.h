@@ -836,6 +836,10 @@ struct terminal {
 
     bool grapheme_shaping;
     bool size_notifications;
+
+    /* For spawn-terminal */
+    int argc;
+    char **argv;
 };
 
 struct config;
@@ -843,7 +847,8 @@ struct terminal *term_init(
     const struct config *conf, struct fdm *fdm, struct reaper *reaper,
     struct wayland *wayl, const char *foot_exe, const char *cwd,
     const char *token, const char *pty_path,
-    int argc, char *const *argv, const char *const *envp,
+    int slave_argc, char *const *slave_argv, const char *const *slave_envp,
+    int foot_argc, const char *const *foot_argv,
     void (*shutdown_cb)(void *data, int exit_code), void *shutdown_data);
 
 bool term_shutdown(struct terminal *term);

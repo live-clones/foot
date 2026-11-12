@@ -95,12 +95,15 @@
   selection direction ([#2483][2483]).
 * Crash in `xdg_output_handle_done()` if called when a terminal is in
   the process of shutting down ([#2487][2487]).
+* `spawn-terminal` not using the command line options from the
+  original instance ([#1622][1622]).
 
 [2432]: https://codeberg.org/dnkl/foot/pulls/2432
 [2467]: https://codeberg.org/dnkl/foot/issues/2467
 [2482]: https://codeberg.org/dnkl/foot/pulls/2482
 [2483]: https://codeberg.org/dnkl/foot/issues/2483
 [2487]: https://codeberg.org/dnkl/foot/issues/2487
+[1622]: https://codeberg.org/dnkl/foot/issues/1622
 
 
 ### Security

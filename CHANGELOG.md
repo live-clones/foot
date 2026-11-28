@@ -99,6 +99,8 @@
   ([#2493][2493]).
 * `spawn-terminal` not using the command line options from the
   original instance ([#1622][1622]).
+* High CPU usage after an escape sequence forced a refresh of the
+  margins ([#2511][2511]).
 
 [2432]: https://codeberg.org/dnkl/foot/pulls/2432
 [2467]: https://codeberg.org/dnkl/foot/issues/2467
@@ -107,6 +109,7 @@
 [2487]: https://codeberg.org/dnkl/foot/issues/2487
 [2493]: https://codeberg.org/dnkl/foot/issues/2493
 [1622]: https://codeberg.org/dnkl/foot/issues/1622
+[2511]: https://codeberg.org/dnkl/foot/issues/2511
 
 
 ### Security

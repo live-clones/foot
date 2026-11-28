@@ -3361,6 +3361,7 @@ grid_render(struct terminal *term)
         term->render.margins)
     {
         force_full_repaint(term, buf);
+        term->render.margins = false;
     }
 
     else if (buf->age > 0) {
